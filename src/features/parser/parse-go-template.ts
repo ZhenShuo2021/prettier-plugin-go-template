@@ -15,8 +15,44 @@ import type { Parser } from "prettier";
 import { aliasNodeContent } from "@/features/parser/alias-node-content";
 
 export const parseGoTemplate: Parser<GoNode>["parse"] = (text) => {
-  const regex =
-    /{{(?<startdelimiter>-|<|%|\/\*)?\s*(?<statement>(?<keyword>if|range|block|with|define|end|else|prettier-ignore-start|prettier-ignore-end)?[\s\S]*?)\s*(?<endDelimiter>-|>|%|\*\/)?}}|(?<unformattableScript><(script)((?!<)[\s\S])*>((?!<\/script)[\s\S])*?{{[\s\S]*?<\/(script)>)|(?<unformattableStyle><(style)((?!<)[\s\S])*>((?!<\/style)[\s\S])*?{{[\s\S]*?<\/(style)>)/g;
+  // Delimiter and keyword pieces
+  const START_DELIMITER = String.raw`(?<startdelimiter>-|<|%|\/\*)?`;
+  const END_DELIMITER = String.raw`(?<endDelimiter>-|>|%|\*\/)?`;
+  const KEYWORD = String.raw`(?<keyword>if|range|block|with|define|end|else|prettier-ignore-start|prettier-ignore-end)?`;
+
+  // Inline/formattable template
+  const INLINE_FORMATTABLE_TEMPLATE = String.raw`{{${START_DELIMITER}\s*(?<statement>${KEYWORD}[\s\S]*?)\s*${END_DELIMITER}}}`;
+
+  const buildUnformattableTag = (
+    tagName: "script" | "style",
+    groupName: string,
+  ) =>
+    String.raw`(?<${groupName}><(${tagName})((?!<)[\s\S])*>((?!<\/${tagName})[\s\S])*?{{[\s\S]*?<\/(${tagName})>)`;
+  // Unformattable script
+
+  const UNFORMATTABLE_SCRIPT = buildUnformattableTag(
+    "script",
+    "unformattableScript",
+  );
+
+  // Unformattable style
+  const UNFORMATTABLE_STYLE = buildUnformattableTag(
+    "style",
+    "unformattableStyle",
+  );
+
+  // Matches:
+  // - standard Go template inline statements
+  // - script/style regions that contain template markers and must stay raw
+  const GO_TEMPLATE_REGEX = new RegExp(
+    [
+      INLINE_FORMATTABLE_TEMPLATE, // {{ ... }}
+      UNFORMATTABLE_SCRIPT, // <script>...{{...}}...</script>
+      UNFORMATTABLE_STYLE, // <style>...{{...}}...</style>
+    ].join("|"),
+    "g",
+  );
+
   const root: GoRoot = {
     type: "root",
     content: text,
@@ -29,7 +65,7 @@ export const parseGoTemplate: Parser<GoNode>["parse"] = (text) => {
   const nodeStack: (GoBlock | GoRoot)[] = [root];
   const getId = createIdGenerator();
 
-  for (const match of text.matchAll(regex)) {
+  for (const match of text.matchAll(GO_TEMPLATE_REGEX)) {
     const current = last(nodeStack);
     const keyword = match.groups?.keyword as GoBlockKeyword | undefined;
     const statement = match.groups?.statement;
