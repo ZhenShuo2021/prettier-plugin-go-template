@@ -34,7 +34,7 @@ Modular core under [`src/`](src/):
 
 ```bash
 npm run build       # Build plugin artifacts with tsdown → dist/
-npm test            # Run all fixture tests(Vitest)
+npm test            # Run all fixture tests (Vitest)
 npm run test:runtime # Build then import dist/index.mjs in plain Node ESM (packaging/runtime smoke test)
 npm run coverage    # Tests with coverage report
 npm run lint        # oxlint
