@@ -35,7 +35,6 @@ describe("format", () => {
       const format = () => prettify(input, configObject);
 
       if (expectedError) {
-        vi.spyOn(console, "error").mockImplementation(() => {});
         await expect(format()).rejects.toEqual(new Error(expectedError));
       } else {
         const result = prettify(input, configObject);
