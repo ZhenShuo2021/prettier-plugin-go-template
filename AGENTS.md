@@ -34,13 +34,12 @@ Modular core under [`src/`](src/):
 
 ```bash
 npm run build       # Build plugin artifacts with tsdown → dist/
-npm test            # Run all fixture tests (Jest + ts-jest ESM preset + VM modules flag)
+npm test            # Run all fixture tests(Vitest)
 npm run test:runtime # Build then import dist/index.mjs in plain Node ESM (packaging/runtime smoke test)
 npm run coverage    # Tests with coverage report
 npm run lint        # oxlint
 npm run format      # prettier --write .
 npm run build:watch # Watch-mode build
-npm run watch:test  # Watch-mode Jest
 npm run release:coverage # Coverage-only release helper
 npm run release:plugin   # Runtime smoke test + coverage + npm publish
 ```
@@ -67,12 +66,11 @@ All subdirectories are **auto-discovered** — no manual registration. A **secon
 
 ## Key Pitfalls
 
-- **`NODE_OPTIONS=--experimental-vm-modules` is currently required** by the Jest + Prettier runtime path in this repo; do not remove without replacing the test runner/config strategy.
 - **Idempotency is enforced**: formatting the output a second time must equal the first result; violations are test failures.
 - **`oxlint` is the standard linter** — keep documentation and scripts aligned with `package.json` lint commands.
 - **`<script>` / `<style>` blocks** containing `{{}}` become `GoUnformattable` nodes and must be preserved byte-for-byte.
 - **Stack-based parser**: unmatched `{{end}}` blocks throw `Error("Missing end block.")` — cover new block types with an error fixture.
-- **Consumer runtime differs from Jest runtime**: always run `npm run test:runtime` before release to catch ESM/CJS interop issues in `dist/`.
+- **Consumer runtime differs from test runtime**: always run `npm run test:runtime` before release to catch ESM/CJS interop issues in `dist/`.
 
 ## Publishing
 
