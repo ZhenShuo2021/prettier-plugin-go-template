@@ -18,11 +18,10 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Debug test",
-      "program": "${workspaceFolder}/node_modules/jest/bin/jest.js",
-      "args": ["--runInBand"],
+      "name": "Debug Vitest",
+      "program": "${workspaceFolder}/node_modules/vitest/vitest.mjs",
+      "args": ["run", "--watch=false"],
       "cwd": "${workspaceFolder}",
-      "runtimeArgs": ["--experimental-vm-modules"],
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen"
     }

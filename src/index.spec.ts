@@ -3,7 +3,6 @@ import * as GoTemplatePlugin from "./index";
 import { readdirSync, readFileSync, existsSync } from "fs";
 import { join } from "path";
 import { fileURLToPath } from "url";
-import { jest } from "@jest/globals";
 import type { GoTemplateParserOptions } from "./types/go-template-parser-options";
 
 const prettify = (code: string, options: Partial<GoTemplateParserOptions>) =>
@@ -36,7 +35,6 @@ describe("format", () => {
       const format = () => prettify(input, configObject);
 
       if (expectedError) {
-        jest.spyOn(console, "error").mockImplementation(() => {});
         await expect(format()).rejects.toEqual(new Error(expectedError));
       } else {
         const result = prettify(input, configObject);

@@ -29,12 +29,11 @@
     "lint:fix": "oxlint --fix",
     "format": "prettier --write .",
     "update:deps": "ncu -u && npm install",
-    "test": "NODE_OPTIONS=--experimental-vm-modules jest",
+    "test": "vitest run",
+    "coverage": "vitest run --coverage",
     "test:runtime": "npm run build && node -e \"import('./dist/index.mjs')\"",
-    "coverage": "NODE_OPTIONS=--experimental-vm-modules jest --coverage --no-cache",
     "release:coverage": "npm run coverage",
     "release:plugin": "npm run test:runtime && npm run release:coverage && npm publish --provenance --access public",
-    "watch:test": "NODE_OPTIONS=--experimental-vm-modules jest --watch",
     "build": "tsdown",
     "build:watch": "tsdown --watch"
   },
@@ -45,20 +44,19 @@
     "node": "^20.19.0 || >=22.12.0"
   },
   "devDependencies": {
-    "@types/jest": "^30.0.0",
     "@types/node": "^26.0.0",
+    "@vitest/coverage-v8": "^4.1.9",
     "codecov": "^3.8.2",
-    "jest": "^30.4.2",
     "lefthook": "^2.1.9",
     "npm-check-updates": "^22.2.3",
     "oxlint": "^1.69.0",
     "oxlint-tsgolint": "^0.23.0",
     "prettier": "^3.8.4",
-    "ts-jest": "^29.4.11",
     "ts-node": "^10.9.2",
     "tsdown": "^0.22.2",
     "tslib": "^2.8.1",
-    "typescript": "^6.0.3"
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.9"
   },
   "dependencies": {
     "ulid": "^3.0.2"
