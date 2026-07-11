@@ -8,7 +8,7 @@
 
 ```bash
 npm i -D prettier
-npm i -D @htnabe/prettier-plugin-go-template@rc && npm uninstall prettier-plugin-go-template
+npm i -D @htnabe/prettier-plugin-go-template && npm uninstall prettier-plugin-go-template
 ```
 
 ### .prettierrc.json
@@ -46,7 +46,7 @@ override が必要なのは、テンプレートを通常の `.html` で運用�
 `prettier-plugin-go-template` から `@htnabe/prettier-plugin-go-template` へ:
 
 1. `npm uninstall prettier-plugin-go-template`
-2. `npm i -D @htnabe/prettier-plugin-go-template@rc`
+2. `npm i -D @htnabe/prettier-plugin-go-template`
 3. `.prettierrc.json` の plugin 名を更新:
 
 ```json

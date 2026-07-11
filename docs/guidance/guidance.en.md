@@ -8,7 +8,7 @@ Single-page guide for setup, migration, examples, and ignore rules.
 
 ```bash
 npm i -D prettier
-npm i -D @htnabe/prettier-plugin-go-template@rc && npm uninstall prettier-plugin-go-template
+npm i -D @htnabe/prettier-plugin-go-template && npm uninstall prettier-plugin-go-template
 ```
 
 ### .prettierrc.json
@@ -46,7 +46,7 @@ For auto-detected extensions listed above, the override can be omitted.
 From `prettier-plugin-go-template` to `@htnabe/prettier-plugin-go-template`:
 
 1. `npm uninstall prettier-plugin-go-template`
-2. `npm i -D @htnabe/prettier-plugin-go-template@rc`
+2. `npm i -D @htnabe/prettier-plugin-go-template`
 3. Update `.prettierrc.json` plugin name:
 
 ```json

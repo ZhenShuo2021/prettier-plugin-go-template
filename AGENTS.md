@@ -6,7 +6,7 @@ Prettier plugin that formats Hugo/Go template files. Peer dependency: `prettier 
 
 Supported extensions: `.go.html`, `.gohtml`, `.gotmpl`, `.go.tmpl`, `.tmpl`, `.tpl`, `.html.tmpl`, `.html.tpl`.
 
-> See [README.md](README.md) for project intent and [CHANGELOG.md](CHANGELOG.md) for version history.
+> See [README.md](README.md) for project intent.
 
 ## Documentation
 
@@ -74,11 +74,10 @@ All subdirectories are **auto-discovered** — no manual registration. A **secon
 
 ## Publishing
 
-- Release workflow is [.github/workflows/publish.yaml](.github/workflows/publish.yaml).
-- Trigger: GitHub release `published`, gated to `v*` tags that match `package.json` version after removing `v`.
-- Publish target: npm package `@htnabe/prettier-plugin-go-template` with trusted publishing (OIDC).
-- Dist-tags: stable releases use `latest`; prereleases default to `next` and can be overridden with `NPM_PRERELEASE_DIST_TAG` repository variable.
-- GitHub Environment `publish` must exist for the workflow job.
+Publishing details are centralized in [docs/develop/publishing.md](docs/develop/publishing.md).
+
+- Source of truth: [docs/develop/publishing.md](docs/develop/publishing.md)
+- Workflow file: [.github/workflows/publish.yaml](.github/workflows/publish.yaml)
 
 ## Plugin Option
 
