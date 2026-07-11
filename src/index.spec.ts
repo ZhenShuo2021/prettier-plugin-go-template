@@ -2,19 +2,19 @@ import * as prettier from "prettier";
 import * as GoTemplatePlugin from "./index";
 import { readdirSync, readFileSync, existsSync } from "fs";
 import { join } from "path";
-import { jest } from "@jest/globals";
+import { fileURLToPath } from "url";
+import type { GoTemplateParserOptions } from "./types/go-template-parser-options";
 
-const prettify = (
-  code: string,
-  options: Partial<GoTemplatePlugin.PrettierPluginGoTemplateParserOptions>,
-) =>
-  prettier.format(code, {
-    parser: "go-template" as any,
-    plugins: [GoTemplatePlugin],
-    ...options,
-  });
+const prettify = (code: string, options: Partial<GoTemplateParserOptions>) =>
+  Promise.resolve(
+    prettier.format(code, {
+      parser: "go-template" as any,
+      plugins: [GoTemplatePlugin],
+      ...options,
+    }),
+  );
 
-const testFolder = join(process.cwd(), "src", "tests");
+const testFolder = join(fileURLToPath(new URL(".", import.meta.url)), "tests");
 const tests = readdirSync(testFolder);
 
 describe("format", () => {
@@ -35,15 +35,14 @@ describe("format", () => {
       const format = () => prettify(input, configObject);
 
       if (expectedError) {
-        jest.spyOn(console, "error").mockImplementation(() => {});
         await expect(format()).rejects.toEqual(new Error(expectedError));
       } else {
         const result = prettify(input, configObject);
-        await expect(await result).toEqual(expected);
+        await expect(result).resolves.toEqual(expected);
         // Check that a second prettifying is not changing the result again.
-        await expect(await prettify(await result, configObject)).toEqual(
-          expected,
-        );
+        await expect(
+          result.then((formatted) => prettify(formatted, configObject)),
+        ).resolves.toEqual(expected);
       }
     }),
   );

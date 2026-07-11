@@ -1,9 +1,59 @@
+import type {
+  GoNode,
+  GoRoot,
+  GoBlock,
+  GoBlockKeyword,
+  GoInlineStartDelimiter,
+  GoInlineEndDelimiter,
+  GoInline,
+  GoMultiBlock,
+} from "@/types/ast/ast";
+import astGuards from "@/types/ast/ast-guards";
+import { createIdGenerator } from "@/utils/create-id-generator";
+import last from "@/utils/last";
 import type { Parser } from "prettier";
-import { createIdGenerator } from "./create-id-generator";
+import { aliasNodeContent } from "@/features/parser/alias-node-content";
+import { isValidStatement } from "@/features/parser/is-valid-statement";
 
 export const parseGoTemplate: Parser<GoNode>["parse"] = (text) => {
-  const regex =
-    /{{(?<startdelimiter>-|<|%|\/\*)?\s*(?<statement>(?<keyword>if|range|block|with|define|end|else|prettier-ignore-start|prettier-ignore-end)?[\s\S]*?)\s*(?<endDelimiter>-|>|%|\*\/)?}}|(?<unformattableScript><(script)((?!<)[\s\S])*>((?!<\/script)[\s\S])*?{{[\s\S]*?<\/(script)>)|(?<unformattableStyle><(style)((?!<)[\s\S])*>((?!<\/style)[\s\S])*?{{[\s\S]*?<\/(style)>)/g;
+  // Delimiter and keyword pieces
+  const START_DELIMITER = String.raw`(?<startdelimiter>-|<|%|\/\*)?`;
+  const END_DELIMITER = String.raw`(?<endDelimiter>-|>|%|\*\/)?`;
+  const KEYWORD = String.raw`(?<keyword>if|range|block|with|define|end|else|prettier-ignore-start|prettier-ignore-end)?`;
+
+  // Inline/formattable template
+  const INLINE_FORMATTABLE_TEMPLATE = String.raw`{{${START_DELIMITER}\s*(?<statement>${KEYWORD}[\s\S]*?)\s*${END_DELIMITER}}}`;
+
+  const buildUnformattableTag = (
+    tagName: "script" | "style",
+    groupName: string,
+  ) =>
+    String.raw`(?<${groupName}><(${tagName})((?!<)[\s\S])*>((?!<\/${tagName})[\s\S])*?{{[\s\S]*?<\/(${tagName})>)`;
+  // Unformattable script
+
+  const UNFORMATTABLE_SCRIPT = buildUnformattableTag(
+    "script",
+    "unformattableScript",
+  );
+
+  // Unformattable style
+  const UNFORMATTABLE_STYLE = buildUnformattableTag(
+    "style",
+    "unformattableStyle",
+  );
+
+  // Matches:
+  // - standard Go template inline statements
+  // - script/style regions that contain template markers and must stay raw
+  const GO_TEMPLATE_REGEX = new RegExp(
+    [
+      INLINE_FORMATTABLE_TEMPLATE, // {{ ... }}
+      UNFORMATTABLE_SCRIPT, // <script>...{{...}}...</script>
+      UNFORMATTABLE_STYLE, // <style>...{{...}}...</style>
+    ].join("|"),
+    "g",
+  );
+
   const root: GoRoot = {
     type: "root",
     content: text,
@@ -16,25 +66,19 @@ export const parseGoTemplate: Parser<GoNode>["parse"] = (text) => {
   const nodeStack: (GoBlock | GoRoot)[] = [root];
   const getId = createIdGenerator();
 
-  for (const match of text.matchAll(regex)) {
+  for (const match of text.matchAll(GO_TEMPLATE_REGEX)) {
+    if (match.index === undefined) {
+      throw Error("Regex match index undefined.");
+    }
+
     const current = last(nodeStack);
-    const keyword = match.groups?.keyword as GoBlockKeyword | undefined;
-    const statement = match.groups?.statement;
-    const unformattable =
-      match.groups?.unformattableScript ?? match.groups?.unformattableStyle;
-
-    const startDelimiter = (match.groups?.startdelimiter ??
-      "") as GoInlineStartDelimiter;
-    const endDelimiter = (match.groups?.endDelimiter ??
-      "") as GoInlineEndDelimiter;
-
     if (current === undefined) {
       throw Error("Node stack empty.");
     }
 
-    if (match.index === undefined) {
-      throw Error("Regex match index undefined.");
-    }
+    const unformattable =
+      match.groups?.unformattableScript ?? match.groups?.unformattableStyle;
+
     const id = getId();
     if (unformattable) {
       current.children[id] = {
@@ -48,8 +92,21 @@ export const parseGoTemplate: Parser<GoNode>["parse"] = (text) => {
       continue;
     }
 
+    const statement = match.groups?.statement;
     if (statement === undefined) {
       throw Error("Formattable match without statement.");
+    }
+
+    const startDelimiter = (match.groups?.startdelimiter ??
+      "") as GoInlineStartDelimiter;
+    const endDelimiter = (match.groups?.endDelimiter ??
+      "") as GoInlineEndDelimiter;
+    const isCommentAction = startDelimiter === "/*" && endDelimiter === "*/";
+
+    if (!isCommentAction && !isValidStatement(statement)) {
+      throw Error(
+        "String literal is not closed. Invalid Go template statement",
+      );
     }
 
     const inline: GoInline = {
@@ -62,6 +119,8 @@ export const parseGoTemplate: Parser<GoNode>["parse"] = (text) => {
       statement,
       id,
     };
+
+    const keyword = match.groups?.keyword as GoBlockKeyword | undefined;
 
     if (keyword === "end" || keyword === "prettier-ignore-end") {
       if (current.type !== "block") {
@@ -83,7 +142,7 @@ export const parseGoTemplate: Parser<GoNode>["parse"] = (text) => {
       }
 
       nodeStack.pop();
-    } else if (isBlock(current) && keyword === "else") {
+    } else if (astGuards.isBlock(current) && keyword === "else") {
       const nextChild: GoBlock = {
         type: "block",
         start: inline,
@@ -101,7 +160,7 @@ export const parseGoTemplate: Parser<GoNode>["parse"] = (text) => {
         endDelimiter,
       };
 
-      if (isMultiBlock(current.parent)) {
+      if (astGuards.isMultiBlock(current.parent)) {
         current.parent.blocks.push(nextChild);
       } else {
         const multiBlock: GoMultiBlock = {
@@ -155,7 +214,7 @@ export const parseGoTemplate: Parser<GoNode>["parse"] = (text) => {
     }
   }
 
-  if (!isRoot(nodeStack.pop()!)) {
+  if (!astGuards.isRoot(nodeStack.pop()!)) {
     throw Error("Missing end block.");
   }
 
@@ -163,116 +222,3 @@ export const parseGoTemplate: Parser<GoNode>["parse"] = (text) => {
 
   return root;
 };
-
-function aliasNodeContent(current: GoBlock | GoRoot): string {
-  let result = current.content;
-
-  Object.entries(current.children)
-    .sort(([_, node1], [__, node2]) => node2.index - node1.index)
-    .forEach(
-      ([id, node]) =>
-        (result =
-          result.substring(0, node.index - current.contentStart) +
-          id +
-          result.substring(node.index + node.length - current.contentStart)),
-    );
-
-  return result;
-}
-
-function last<T>(array: T[]): T | undefined {
-  return array[array.length - 1];
-}
-
-export type GoNode =
-  | GoRoot
-  | GoBlock
-  | GoInline
-  | GoMultiBlock
-  | GoUnformattable;
-
-export type GoBlockKeyword =
-  | "if"
-  | "range"
-  | "block"
-  | "with"
-  | "define"
-  | "else"
-  | "prettier-ignore-start"
-  | "prettier-ignore-end"
-  | "end";
-
-export type GoRoot = { type: "root" } & Omit<
-  GoBlock,
-  | "type"
-  | "keyword"
-  | "parent"
-  | "statement"
-  | "id"
-  | "startDelimiter"
-  | "endDelimiter"
-  | "start"
-  | "end"
->;
-
-export interface GoBaseNode<Type extends string> {
-  id: string;
-  type: Type;
-  index: number;
-  length: number;
-  parent: GoBlock | GoRoot | GoMultiBlock;
-}
-
-export interface GoBlock extends GoBaseNode<"block">, WithDelimiter {
-  keyword: GoBlockKeyword;
-  children: {
-    [id: string]: GoNode;
-  };
-  start: GoInline;
-  end: GoInline | null;
-  content: string;
-  aliasedContent: string;
-  contentStart: number;
-}
-
-export interface GoMultiBlock extends GoBaseNode<"double-block"> {
-  blocks: (GoBlock | GoMultiBlock)[];
-  keyword: GoBlockKeyword;
-}
-
-export type GoSharedDelimiter = "%" | "-" | "";
-export type GoInlineStartDelimiter = "<" | "/*" | GoSharedDelimiter;
-export type GoInlineEndDelimiter = ">" | "*/" | GoSharedDelimiter;
-
-export interface GoUnformattable extends GoBaseNode<"unformattable"> {
-  content: string;
-}
-
-export interface WithDelimiter {
-  startDelimiter: GoInlineStartDelimiter;
-  endDelimiter: GoInlineEndDelimiter;
-}
-
-export interface GoInline extends GoBaseNode<"inline">, WithDelimiter {
-  statement: string;
-}
-
-export function isInline(node: GoNode): node is GoInline {
-  return node.type === "inline";
-}
-
-export function isBlock(node: GoNode): node is GoBlock {
-  return node.type === "block";
-}
-
-export function isMultiBlock(node: GoNode): node is GoMultiBlock {
-  return node.type === "double-block";
-}
-
-export function isRoot(node: GoNode): node is GoRoot {
-  return node.type === "root";
-}
-
-export function isUnformattable(node: GoNode): node is GoRoot {
-  return node.type === "unformattable";
-}

@@ -6,7 +6,7 @@ Prettier plugin that formats Hugo/Go template files. Peer dependency: `prettier 
 
 Supported extensions: `.go.html`, `.gohtml`, `.gotmpl`, `.go.tmpl`, `.tmpl`, `.tpl`, `.html.tmpl`, `.html.tpl`.
 
-> See [README.md](README.md) for project intent and [CHANGELOG.md](CHANGELOG.md) for version history.
+> See [README.md](README.md) for project intent.
 
 ## Documentation
 
@@ -17,27 +17,29 @@ Supported extensions: `.go.html`, `.gohtml`, `.gotmpl`, `.go.tmpl`, `.tmpl`, `.t
 
 ## Architecture
 
-Three-file core in [`src/`](src/):
+Modular core under [`src/`](src/):
 
-| File                                                       | Role                                                                                                        |
-| ---------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
-| [`src/parse.ts`](src/parse.ts)                             | Regex parser; builds AST (`GoRoot`, `GoBlock`, `GoInline`, `GoMultiBlock`, `GoUnformattable`) using a stack |
-| [`src/index.ts`](src/index.ts)                             | Prettier plugin entry; printer switch, `embed()` flow, plugin option declaration                            |
-| [`src/create-id-generator.ts`](src/create-id-generator.ts) | ULID factory used to alias Go template nodes during the HTML formatting pass                                |
+| Path                                            | Role                                                                               |
+| ----------------------------------------------- | ---------------------------------------------------------------------------------- |
+| [`src/index.ts`](src/index.ts)                  | Plugin entrypoint; exports `languages`, `options`, `parsers`, and `printers`       |
+| [`src/config/`](src/config)                     | Plugin constants, language registration, and user option definitions               |
+| [`src/features/parser/`](src/features/parser)   | Parser orchestration (`parsers.ts`) and regex AST builder (`parse-go-template.ts`) |
+| [`src/features/printer/`](src/features/printer) | Printer orchestration (`printers.ts`) and printer helper utilities                 |
+| [`src/types/`](src/types)                       | AST and option types (`src/types/ast/ast.ts`, guards, parser-option interfaces)    |
+| [`src/utils/`](src/utils)                       | Shared utility helpers such as ULID ID generation and collection helpers           |
 
-**Formatting flow**: `parseGoTemplate()` → AST with aliased child IDs → `embed()` replaces IDs with formatted children → Prettier HTML parser → re-inject → final output.
+**Formatting flow**: parser in `src/features/parser/parse-go-template.ts` builds aliased AST → printer `embed()` in `src/features/printer/printers.ts` maps IDs back to formatted children through Prettier HTML → final document output.
 
 ## Commands
 
 ```bash
 npm run build       # Build plugin artifacts with tsdown → dist/
-npm test            # Run all fixture tests (Jest + ts-jest ESM preset + VM modules flag)
+npm test            # Run all fixture tests (Vitest)
 npm run test:runtime # Build then import dist/index.mjs in plain Node ESM (packaging/runtime smoke test)
 npm run coverage    # Tests with coverage report
 npm run lint        # oxlint
 npm run format      # prettier --write .
 npm run build:watch # Watch-mode build
-npm run watch:test  # Watch-mode Jest
 npm run release:coverage # Coverage-only release helper
 npm run release:plugin   # Runtime smoke test + coverage + npm publish
 ```
@@ -64,20 +66,18 @@ All subdirectories are **auto-discovered** — no manual registration. A **secon
 
 ## Key Pitfalls
 
-- **`NODE_OPTIONS=--experimental-vm-modules` is currently required** by the Jest + Prettier runtime path in this repo; do not remove without replacing the test runner/config strategy.
 - **Idempotency is enforced**: formatting the output a second time must equal the first result; violations are test failures.
 - **`oxlint` is the standard linter** — keep documentation and scripts aligned with `package.json` lint commands.
 - **`<script>` / `<style>` blocks** containing `{{}}` become `GoUnformattable` nodes and must be preserved byte-for-byte.
 - **Stack-based parser**: unmatched `{{end}}` blocks throw `Error("Missing end block.")` — cover new block types with an error fixture.
-- **Consumer runtime differs from Jest runtime**: always run `npm run test:runtime` before release to catch ESM/CJS interop issues in `dist/`.
+- **Consumer runtime differs from test runtime**: always run `npm run test:runtime` before release to catch ESM/CJS interop issues in `dist/`.
 
 ## Publishing
 
-- Release workflow is [.github/workflows/publish.yaml](.github/workflows/publish.yaml).
-- Trigger: GitHub release `published`, gated to `v*` tags that match `package.json` version after removing `v`.
-- Publish target: npm package `@htnabe/prettier-plugin-go-template` with trusted publishing (OIDC).
-- Dist-tags: stable releases use `latest`; prereleases default to `next` and can be overridden with `NPM_PRERELEASE_DIST_TAG` repository variable.
-- GitHub Environment `publish` must exist for the workflow job.
+Publishing details are centralized in [docs/develop/publishing.md](docs/develop/publishing.md).
+
+- Source of truth: [docs/develop/publishing.md](docs/develop/publishing.md)
+- Workflow file: [.github/workflows/publish.yaml](.github/workflows/publish.yaml)
 
 ## Plugin Option
 

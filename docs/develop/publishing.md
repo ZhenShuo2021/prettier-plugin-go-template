@@ -8,6 +8,31 @@ Publishing is automated from GitHub Actions when a GitHub Release is published.
 - Registry: npm (`https://registry.npmjs.org`)
 - Package: `@htnabe/prettier-plugin-go-template`
 
+## Release Procedure
+
+1. Start from a release branch (for example `release/v0.0.1`).
+2. Update version files without creating a tag:
+
+```bash
+npm version 0.0.1 --no-git-tag-version
+```
+
+3. Commit release changes on the release branch.
+4. Create and merge PRs in this order:
+   - `release/v0.0.1` -> `dev`
+   - `dev` -> `main`
+5. After merge to `main`, create and push the release tag:
+
+```bash
+git checkout main
+git pull
+git tag v0.0.1
+git push
+git push --tags
+```
+
+6. Publish a GitHub Release for `v0.0.1` (event type `published`) to trigger npm publish.
+
 ### Dist-tags
 
 - Stable versions publish with dist-tag `latest`
