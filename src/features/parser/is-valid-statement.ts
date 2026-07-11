@@ -1,8 +1,8 @@
 type State = "normal" | "inDouble" | "inRaw";
 
 /**
- * Validates a Go template statement.
- * @param statement The statement of RegExp to validate.
+ * Validates the content of a Go template action statement (inside `{{ ... }}`).
+ * Returns false when it contains an unterminated double-quoted (") or raw (`) string literal.
  */
 export function isValidStatement(statement: string): boolean {
   let state: State = "normal";

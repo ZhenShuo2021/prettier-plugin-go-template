@@ -97,16 +97,17 @@ export const parseGoTemplate: Parser<GoNode>["parse"] = (text) => {
       throw Error("Formattable match without statement.");
     }
 
-    if (!isValidStatement(statement)) {
-      throw Error(
-        "String literal is not closed. Invalid Go template statement",
-      );
-    }
-
     const startDelimiter = (match.groups?.startdelimiter ??
       "") as GoInlineStartDelimiter;
     const endDelimiter = (match.groups?.endDelimiter ??
       "") as GoInlineEndDelimiter;
+    const isCommentAction = startDelimiter === "/*" && endDelimiter === "*/";
+
+    if (!isCommentAction && !isValidStatement(statement)) {
+      throw Error(
+        "String literal is not closed. Invalid Go template statement",
+      );
+    }
 
     const inline: GoInline = {
       index: match.index,

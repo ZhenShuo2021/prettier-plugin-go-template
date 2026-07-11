@@ -90,6 +90,11 @@ describe("parseGoTemplate error guards", () => {
     );
   });
 
+  // Comment actions are opaque payloads and may include unmatched quotes.
+  it("does not throw for unmatched quotes inside comment actions", () => {
+    expect(() => parseGoTemplate('{{/* " */}}', parserOptions)).not.toThrow();
+  });
+
   // Uses a mock because normal AST assembly should always provide a parent
   // shape with `children` in this branch. Real-world cause (rare): malformed
   // parent linkage introduced by block/else handling refactors.

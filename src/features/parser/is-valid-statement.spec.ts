@@ -1,6 +1,6 @@
 import { isValidStatement } from "./is-valid-statement";
 
-describe("validateStatement", () => {
+describe("isValidStatement", () => {
   type TestCase = {
     name: string;
     statement: string;
