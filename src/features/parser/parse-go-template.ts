@@ -13,6 +13,7 @@ import { createIdGenerator } from "@/utils/create-id-generator";
 import last from "@/utils/last";
 import type { Parser } from "prettier";
 import { aliasNodeContent } from "@/features/parser/alias-node-content";
+import { isValidStatement } from "@/features/parser/is-valid-statement";
 
 export const parseGoTemplate: Parser<GoNode>["parse"] = (text) => {
   // Delimiter and keyword pieces
@@ -66,24 +67,18 @@ export const parseGoTemplate: Parser<GoNode>["parse"] = (text) => {
   const getId = createIdGenerator();
 
   for (const match of text.matchAll(GO_TEMPLATE_REGEX)) {
+    if (match.index === undefined) {
+      throw Error("Regex match index undefined.");
+    }
+
     const current = last(nodeStack);
-    const keyword = match.groups?.keyword as GoBlockKeyword | undefined;
-    const statement = match.groups?.statement;
-    const unformattable =
-      match.groups?.unformattableScript ?? match.groups?.unformattableStyle;
-
-    const startDelimiter = (match.groups?.startdelimiter ??
-      "") as GoInlineStartDelimiter;
-    const endDelimiter = (match.groups?.endDelimiter ??
-      "") as GoInlineEndDelimiter;
-
     if (current === undefined) {
       throw Error("Node stack empty.");
     }
 
-    if (match.index === undefined) {
-      throw Error("Regex match index undefined.");
-    }
+    const unformattable =
+      match.groups?.unformattableScript ?? match.groups?.unformattableStyle;
+
     const id = getId();
     if (unformattable) {
       current.children[id] = {
@@ -97,8 +92,21 @@ export const parseGoTemplate: Parser<GoNode>["parse"] = (text) => {
       continue;
     }
 
+    const statement = match.groups?.statement;
     if (statement === undefined) {
       throw Error("Formattable match without statement.");
+    }
+
+    const startDelimiter = (match.groups?.startdelimiter ??
+      "") as GoInlineStartDelimiter;
+    const endDelimiter = (match.groups?.endDelimiter ??
+      "") as GoInlineEndDelimiter;
+    const isCommentAction = startDelimiter === "/*" && endDelimiter === "*/";
+
+    if (!isCommentAction && !isValidStatement(statement)) {
+      throw Error(
+        "String literal is not closed. Invalid Go template statement",
+      );
     }
 
     const inline: GoInline = {
@@ -111,6 +119,8 @@ export const parseGoTemplate: Parser<GoNode>["parse"] = (text) => {
       statement,
       id,
     };
+
+    const keyword = match.groups?.keyword as GoBlockKeyword | undefined;
 
     if (keyword === "end" || keyword === "prettier-ignore-end") {
       if (current.type !== "block") {

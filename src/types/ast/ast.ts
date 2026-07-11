@@ -79,8 +79,4 @@ export type GoRoot = { type: "root" } & Omit<
 >;
 
 export type GoNode =
-  | GoRoot
-  | GoBlock
-  | GoInline
-  | GoMultiBlock
-  | GoUnformattable;
+  GoRoot | GoBlock | GoInline | GoMultiBlock | GoUnformattable;
