@@ -17,18 +17,7 @@ Supported extensions: `.go.html`, `.gohtml`, `.gotmpl`, `.go.tmpl`, `.tmpl`, `.t
 
 ## Architecture
 
-Modular core under [`src/`](src/):
-
-| Path                                            | Role                                                                               |
-| ----------------------------------------------- | ---------------------------------------------------------------------------------- |
-| [`src/index.ts`](src/index.ts)                  | Plugin entrypoint; exports `languages`, `options`, `parsers`, and `printers`       |
-| [`src/config/`](src/config)                     | Plugin constants, language registration, and user option definitions               |
-| [`src/features/parser/`](src/features/parser)   | Parser orchestration (`parsers.ts`) and regex AST builder (`parse-go-template.ts`) |
-| [`src/features/printer/`](src/features/printer) | Printer orchestration (`printers.ts`) and printer helper utilities                 |
-| [`src/types/`](src/types)                       | AST and option types (`src/types/ast/ast.ts`, guards, parser-option interfaces)    |
-| [`src/utils/`](src/utils)                       | Shared utility helpers such as ULID ID generation and collection helpers           |
-
-**Formatting flow**: parser in `src/features/parser/parse-go-template.ts` builds aliased AST → printer `embed()` in `src/features/printer/printers.ts` maps IDs back to formatted children through Prettier HTML → final document output.
+Architecture and project structure details are centralized in [docs/develop/structure.md](docs/develop/structure.md).
 
 ## Commands
 
@@ -76,7 +65,6 @@ All subdirectories are **auto-discovered** — no manual registration. A **secon
 
 Publishing details are centralized in [docs/develop/publishing.md](docs/develop/publishing.md).
 
-- Source of truth: [docs/develop/publishing.md](docs/develop/publishing.md)
 - Workflow file: [.github/workflows/publish.yaml](.github/workflows/publish.yaml)
 
 ## Plugin Option
