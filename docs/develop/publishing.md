@@ -14,7 +14,7 @@ Publishing is automated from GitHub Actions when a GitHub Release is published.
 2. Update version files without creating a tag:
 
 ```bash
-npm version 0.0.1 --no-git-tag-version
+pnpm version 0.0.1 --no-git-tag-version
 ```
 
 3. Commit release changes on the release branch.
@@ -63,4 +63,4 @@ gh release create v0.0.1 --verify-tag --generate-notes
 
 1. Create a GitHub Environment named `publish`
 2. Keep workflow permissions that enable trusted publishing (`id-token: write`, `contents: read`)
-3. Ensure npm trusted publishing (OIDC) is configured for this repository/package in npm settings
+3. Ensure trusted publishing (OIDC) is configured for this repository/package on npmjs.com. This repo publishes via `pnpm publish --provenance`; verify with a real release that pnpm's OIDC flow is accepted the same way npm's is before removing any fallback token-based publish path.

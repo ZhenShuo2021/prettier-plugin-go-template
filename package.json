@@ -20,6 +20,7 @@
     "html"
   ],
   "type": "module",
+  "packageManager": "pnpm@10.33.4",
   "types": "./dist/index.d.mts",
   "files": [
     "dist"
@@ -28,12 +29,12 @@
     "lint": "oxlint",
     "lint:fix": "oxlint --fix",
     "format": "prettier --write .",
-    "update:deps": "ncu -u && npm install",
+    "update:deps": "ncu -u && pnpm install",
     "test": "vitest run",
     "coverage": "vitest run --coverage",
-    "test:runtime": "npm run build && node -e \"import('./dist/index.mjs')\"",
-    "release:coverage": "npm run coverage",
-    "release:plugin": "npm run test:runtime && npm run release:coverage && npm publish --provenance --access public",
+    "test:runtime": "pnpm run build && node -e \"import('./dist/index.mjs')\"",
+    "release:coverage": "pnpm run coverage",
+    "release:plugin": "pnpm run test:runtime && pnpm run release:coverage && pnpm publish --provenance --access public",
     "build": "tsdown",
     "build:watch": "tsdown --watch"
   },

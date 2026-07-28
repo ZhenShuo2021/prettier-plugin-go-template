@@ -22,19 +22,20 @@ Architecture and project structure details are centralized in [docs/develop/stru
 ## Commands
 
 ```bash
-npm run build       # Build plugin artifacts with tsdown → dist/
-npm test            # Run all fixture tests (Vitest)
-npm run test:runtime # Build then import dist/index.mjs in plain Node ESM (packaging/runtime smoke test)
-npm run coverage    # Tests with coverage report
-npm run lint        # oxlint
-npm run format      # prettier --write .
-npm run build:watch # Watch-mode build
-npm run release:coverage # Coverage-only release helper
-npm run release:plugin   # Runtime smoke test + coverage + npm publish
+pnpm run build       # Build plugin artifacts with tsdown → dist/
+pnpm test            # Run all fixture tests (Vitest)
+pnpm run test:runtime # Build then import dist/index.mjs in plain Node ESM (packaging/runtime smoke test)
+pnpm run coverage    # Tests with coverage report
+pnpm run lint        # oxlint
+pnpm run format      # prettier --write .
+pnpm run build:watch # Watch-mode build
+pnpm run release:coverage # Coverage-only release helper
+pnpm run release:plugin   # Runtime smoke test + coverage + npm publish
 ```
 
 > **Pre-commit**: `lefthook` runs `lint` + `format` in parallel on every commit. See [lefthook.yaml](lefthook.yaml).  
-> **CI**: `npm ci && npm test` on PRs to `main`/`dev`. See [.github/workflows/test.yaml](.github/workflows/test.yaml).
+> **CI**: `pnpm install --frozen-lockfile && pnpm test` on PRs to `main`/`dev`. See [.github/workflows/test.yaml](.github/workflows/test.yaml).
+> **Package manager**: this repo uses pnpm, pinned via the `packageManager` field in [package.json](package.json). Run `corepack enable` (or `npm i -g pnpm@10.33.4`) before running any command above.
 
 ## Testing
 
@@ -51,7 +52,7 @@ src/tests/<test-name>/
 
 All subdirectories are **auto-discovered** — no manual registration. A **second format pass** is always run; it must produce identical output (idempotency check).
 
-**To add a test**: create the folder with `input.html` and `expected.html`, then `npm test`.
+**To add a test**: create the folder with `input.html` and `expected.html`, then `pnpm test`.
 
 ## Key Pitfalls
 
@@ -59,7 +60,7 @@ All subdirectories are **auto-discovered** — no manual registration. A **secon
 - **`oxlint` is the standard linter** — keep documentation and scripts aligned with `package.json` lint commands.
 - **`<script>` / `<style>` blocks** containing `{{}}` become `GoUnformattable` nodes and must be preserved byte-for-byte.
 - **Stack-based parser**: unmatched `{{end}}` blocks throw `Error("Missing end block.")` — cover new block types with an error fixture.
-- **Consumer runtime differs from test runtime**: always run `npm run test:runtime` before release to catch ESM/CJS interop issues in `dist/`.
+- **Consumer runtime differs from test runtime**: always run `pnpm run test:runtime` before release to catch ESM/CJS interop issues in `dist/`.
 
 ## Publishing
 
