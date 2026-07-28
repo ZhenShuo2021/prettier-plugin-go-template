@@ -67,6 +67,23 @@ const embed: Exclude<Printer<GoNode>["embed"], undefined> = () => {
       return undefined;
     }
 
+    // A prettier-ignore block's content must never be handed to the HTML
+    // parser: it can be deliberately malformed HTML (e.g. a lone closing
+    // tag), which the HTML parser is not guaranteed to accept. Short-circuit
+    // here, before textToDoc is ever called, rather than after — otherwise
+    // the (potentially failing) HTML parse still runs even though its
+    // result would just be thrown away below.
+    if (isPrettierIgnoreBlock(node)) {
+      const startStatement = path.call(print, "start");
+      const endStatement = node.end ? path.call(print, "end") : "";
+
+      return [
+        utils.removeLines(startStatement),
+        printPlainBlock(node.content),
+        endStatement,
+      ];
+    }
+
     const html = await textToDoc(node.aliasedContent, {
       ...parserOptions,
       parser: "html",
@@ -104,14 +121,6 @@ const embed: Exclude<Printer<GoNode>["embed"], undefined> = () => {
 
     const startStatement = path.call(print, "start");
     const endStatement = node.end ? path.call(print, "end") : "";
-
-    if (isPrettierIgnoreBlock(node)) {
-      return [
-        utils.removeLines(path.call(print, "start")),
-        printPlainBlock(node.content),
-        endStatement,
-      ];
-    }
 
     const content = node.aliasedContent.trim()
       ? builders.indent([builders.softline, mapped])
