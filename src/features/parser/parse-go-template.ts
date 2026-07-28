@@ -140,7 +140,17 @@ export const parseGoTemplate: Parser<GoNode>["parse"] = (text) => {
       id,
     };
 
-    const keyword = match.groups?.keyword as GoBlockKeyword | undefined;
+    // A comment's inner text is opaque and must never drive block-stack
+    // transitions, even when it happens to start with a keyword-like word
+    // (e.g. `{{/* end */}}` or `{{/* if */}}`). The only exception is the
+    // `prettier-ignore-start` / `prettier-ignore-end` directives, which are
+    // themselves comments and must still be recognized as keywords.
+    const rawKeyword = match.groups?.keyword as GoBlockKeyword | undefined;
+    const isIgnoreDirective =
+      rawKeyword === "prettier-ignore-start" ||
+      rawKeyword === "prettier-ignore-end";
+    const keyword =
+      isCommentAction && !isIgnoreDirective ? undefined : rawKeyword;
 
     if (keyword === "end" || keyword === "prettier-ignore-end") {
       if (current.type !== "block") {
