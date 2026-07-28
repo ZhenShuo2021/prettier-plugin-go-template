@@ -4,8 +4,7 @@ export default defineConfig({
   entry: ["./src/index.ts"],
   format: ["esm"],
   dts: {
-    // enable sourcemap to jump to the original source code in IDE
-    sourcemap: true,
+    sourcemap: false,
   },
   // optimize for node.js environment
   platform: "node",
