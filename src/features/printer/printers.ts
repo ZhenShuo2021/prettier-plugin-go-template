@@ -10,10 +10,7 @@ import {
   printUnformattable,
   printPlainBlock,
 } from "./utils/print";
-import {
-  hasPrettierIgnoreLine,
-  isPrettierIgnoreBlock,
-} from "./utils/prettier-ignore";
+import { hasPrettierIgnoreLine, isPrettierIgnoreBlock } from "@/ignore";
 import {
   hasNodeLinebreak,
   isFollowedByEmptyLine,

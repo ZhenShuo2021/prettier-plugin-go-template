@@ -1,5 +1,5 @@
 import type { GoInline } from "@/types/ast/ast";
-import { getFirstBlockParent } from "./ast";
+import { getFirstBlockParent } from "./ast-navigation";
 
 export function hasNodeLinebreak(node: GoInline, source: string): boolean {
   const start = node.index + node.length;
