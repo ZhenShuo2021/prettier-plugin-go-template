@@ -1,6 +1,6 @@
 import type { GoNode } from "@/types/ast/ast";
 import astGuards from "@/types/ast/ast-guards";
-import { getFirstBlockParent } from "./ast";
+import { getFirstBlockParent } from "@/features/printer/utils/ast-navigation";
 
 export function hasPrettierIgnoreLine(node: GoNode): boolean {
   if (astGuards.isRoot(node)) {
@@ -10,7 +10,7 @@ export function hasPrettierIgnoreLine(node: GoNode): boolean {
   const { parent, child } = getFirstBlockParent(node);
 
   const regex = new RegExp(
-    `(?:<!--|{{).*?prettier-ignore.*?(?:-->|}})\n.*${child.id}`,
+    `(?:<!--|{{-?).*?prettier-ignore.*?(?:-->|-?}})\n.*${child.id}`,
   );
 
   return !!parent.aliasedContent.match(regex);

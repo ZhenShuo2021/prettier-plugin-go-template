@@ -3,7 +3,7 @@ import {
   getFirstBlockParent,
   isBlockEnd,
   isBlockStart,
-} from "@/features/printer/utils/ast";
+} from "@/features/printer/utils/ast-navigation";
 
 describe("getFirstBlockParent", () => {
   it("should return the parent node if it is a block", () => {
@@ -13,8 +13,10 @@ describe("getFirstBlockParent", () => {
       index: 0,
       length: 10,
       statement: "test",
+      trimStart: "",
       startDelimiter: "",
       endDelimiter: "",
+      trimEnd: "",
       parent: {} as GoBlock,
     };
 
@@ -27,8 +29,10 @@ describe("getFirstBlockParent", () => {
       children: { "inline-1": mockInline },
       start: mockInline,
       end: null,
+      trimStart: "",
       startDelimiter: "",
       endDelimiter: "",
+      trimEnd: "",
       parent: {} as GoRoot,
       aliasedContent: "inline-1",
       content: "inline-1",
@@ -52,8 +56,10 @@ describe("getFirstBlockParent", () => {
       children: {},
       start: {} as GoInline,
       end: null,
+      trimStart: "",
       startDelimiter: "",
       endDelimiter: "",
+      trimEnd: "",
       parent: {} as GoRoot,
       content: "",
       aliasedContent: "",
@@ -66,8 +72,10 @@ describe("getFirstBlockParent", () => {
       index: 10,
       length: 10,
       statement: "test",
+      trimStart: "",
       startDelimiter: "",
       endDelimiter: "",
+      trimEnd: "",
       parent: mockBlock,
     };
 
@@ -85,8 +93,10 @@ describe("isBlockEnd", () => {
       index: 40,
       length: 10,
       statement: "end",
+      trimStart: "",
       startDelimiter: "",
       endDelimiter: "",
+      trimEnd: "",
       parent: {} as GoBlock,
     };
 
@@ -99,8 +109,10 @@ describe("isBlockEnd", () => {
       children: { "end-1": mockInline },
       start: {} as GoInline,
       end: mockInline,
+      trimStart: "",
       startDelimiter: "",
       endDelimiter: "",
+      trimEnd: "",
       parent: {} as GoRoot,
       content: "",
       aliasedContent: "",
@@ -119,8 +131,10 @@ describe("isBlockEnd", () => {
       index: 10,
       length: 10,
       statement: "test",
+      trimStart: "",
       startDelimiter: "",
       endDelimiter: "",
+      trimEnd: "",
       parent: {} as GoBlock,
     };
 
@@ -133,8 +147,10 @@ describe("isBlockEnd", () => {
       children: { "inline-1": mockInline },
       start: {} as GoInline,
       end: {} as GoInline,
+      trimStart: "",
       startDelimiter: "",
       endDelimiter: "",
+      trimEnd: "",
       parent: {} as GoRoot,
       content: "",
       aliasedContent: "",
@@ -155,8 +171,10 @@ describe("isBlockStart", () => {
       index: 0,
       length: 10,
       statement: "if",
+      trimStart: "",
       startDelimiter: "",
       endDelimiter: "",
+      trimEnd: "",
       parent: {} as GoBlock,
     };
 
@@ -169,8 +187,10 @@ describe("isBlockStart", () => {
       children: { "start-1": mockStartInline },
       start: mockStartInline,
       end: {} as GoInline,
+      trimStart: "",
       startDelimiter: "",
       endDelimiter: "",
+      trimEnd: "",
       parent: {} as GoRoot,
       content: "",
       aliasedContent: "",
@@ -189,8 +209,10 @@ describe("isBlockStart", () => {
       index: 10,
       length: 10,
       statement: "test",
+      trimStart: "",
       startDelimiter: "",
       endDelimiter: "",
+      trimEnd: "",
       parent: {} as GoBlock,
     };
 
@@ -203,8 +225,10 @@ describe("isBlockStart", () => {
       children: { "inline-1": mockInline },
       start: {} as GoInline,
       end: {} as GoInline,
+      trimStart: "",
       startDelimiter: "",
       endDelimiter: "",
+      trimEnd: "",
       parent: {} as GoRoot,
       content: "",
       aliasedContent: "",

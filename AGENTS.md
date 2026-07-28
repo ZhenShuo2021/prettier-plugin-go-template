@@ -55,7 +55,6 @@ All subdirectories are **auto-discovered** — no manual registration. A **secon
 - **`oxlint` is the standard linter** — keep documentation and scripts aligned with `package.json` lint commands.
 - **`<script>` / `<style>` blocks** containing `{{}}` become `GoUnformattable` nodes and must be preserved byte-for-byte.
 - **Stack-based parser**: unmatched `{{end}}` blocks throw `Error("Missing end block.")` — cover new block types with an error fixture.
-- **Consumer runtime differs from test runtime**: always run `pnpm run test:runtime` before release to catch ESM/CJS interop issues in `dist/`.
 
 ## Plugin Option
 

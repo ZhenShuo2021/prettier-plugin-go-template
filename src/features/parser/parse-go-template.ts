@@ -5,6 +5,7 @@ import type {
   GoBlockKeyword,
   GoInlineStartDelimiter,
   GoInlineEndDelimiter,
+  GoTrimMarker,
   GoInline,
   GoMultiBlock,
 } from "@/types/ast/ast";
@@ -17,12 +18,16 @@ import { isValidStatement } from "@/features/parser/is-valid-statement";
 
 export const parseGoTemplate: Parser<GoNode>["parse"] = (text) => {
   // Delimiter and keyword pieces
-  const START_DELIMITER = String.raw`(?<startdelimiter>-|<|%|\/\*)?`;
-  const END_DELIMITER = String.raw`(?<endDelimiter>-|>|%|\*\/)?`;
+  // Trim markers ("-") are captured separately from the action/comment
+  // delimiter so both can appear together, e.g. {{- /* comment */ -}}.
+  const TRIM_START = String.raw`(?<trimStart>-)?`;
+  const TRIM_END = String.raw`(?<trimEnd>-)?`;
+  const START_DELIMITER = String.raw`(?<startdelimiter><|%|\/\*)?`;
+  const END_DELIMITER = String.raw`(?<endDelimiter>>|%|\*\/)?`;
   const KEYWORD = String.raw`(?<keyword>if|range|block|with|define|end|else|prettier-ignore-start|prettier-ignore-end)?`;
 
   // Inline/formattable template
-  const INLINE_FORMATTABLE_TEMPLATE = String.raw`{{${START_DELIMITER}\s*(?<statement>${KEYWORD}[\s\S]*?)\s*${END_DELIMITER}}}`;
+  const INLINE_FORMATTABLE_TEMPLATE = String.raw`{{${TRIM_START}\s*${START_DELIMITER}\s*(?<statement>${KEYWORD}[\s\S]*?)\s*${END_DELIMITER}\s*${TRIM_END}}}`;
 
   const buildUnformattableTag = (
     tagName: "script" | "style",
@@ -97,6 +102,8 @@ export const parseGoTemplate: Parser<GoNode>["parse"] = (text) => {
       throw Error("Formattable match without statement.");
     }
 
+    const trimStart = (match.groups?.trimStart ?? "") as GoTrimMarker;
+    const trimEnd = (match.groups?.trimEnd ?? "") as GoTrimMarker;
     const startDelimiter = (match.groups?.startdelimiter ??
       "") as GoInlineStartDelimiter;
     const endDelimiter = (match.groups?.endDelimiter ??
@@ -112,8 +119,10 @@ export const parseGoTemplate: Parser<GoNode>["parse"] = (text) => {
     const inline: GoInline = {
       index: match.index,
       length: match[0].length,
+      trimStart,
       startDelimiter,
       endDelimiter,
+      trimEnd,
       parent: current!,
       type: "inline",
       statement,
@@ -156,8 +165,10 @@ export const parseGoTemplate: Parser<GoNode>["parse"] = (text) => {
         aliasedContent: "",
         length: -1,
         id: getId(),
+        trimStart,
         startDelimiter,
         endDelimiter,
+        trimEnd,
       };
 
       if (astGuards.isMultiBlock(current.parent)) {
@@ -203,8 +214,10 @@ export const parseGoTemplate: Parser<GoNode>["parse"] = (text) => {
         aliasedContent: "",
         length: -1,
         id: getId(),
+        trimStart,
         startDelimiter,
         endDelimiter,
+        trimEnd,
       };
 
       current.children[block.id] = block;

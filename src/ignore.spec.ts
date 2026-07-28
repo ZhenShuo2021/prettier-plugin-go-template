@@ -1,7 +1,7 @@
 import {
   hasPrettierIgnoreLine,
   isPrettierIgnoreBlock,
-} from "./prettier-ignore";
+} from "./ignore";
 import type { GoNode, GoBlock, GoInline, GoRoot } from "@/types/ast/ast";
 
 describe("hasPrettierIgnoreLine", () => {
@@ -26,8 +26,10 @@ describe("hasPrettierIgnoreLine", () => {
       index: 30,
       length: 12,
       statement: "variable",
+      trimStart: "",
       startDelimiter: "",
       endDelimiter: "",
+      trimEnd: "",
       parent: {} as GoBlock,
     };
 
@@ -40,8 +42,10 @@ describe("hasPrettierIgnoreLine", () => {
       children: { "inline-1": mockInline },
       start: {} as GoInline,
       end: {} as GoInline,
+      trimStart: "",
       startDelimiter: "",
       endDelimiter: "",
+      trimEnd: "",
       parent: {} as GoRoot,
       aliasedContent: "<!-- prettier-ignore -->\ninline-1",
       content: "",
@@ -60,8 +64,10 @@ describe("hasPrettierIgnoreLine", () => {
       index: 20,
       length: 12,
       statement: "variable",
+      trimStart: "",
       startDelimiter: "",
       endDelimiter: "",
+      trimEnd: "",
       parent: {} as GoBlock,
     };
 
@@ -74,8 +80,10 @@ describe("hasPrettierIgnoreLine", () => {
       children: { "inline-2": mockInline },
       start: {} as GoInline,
       end: {} as GoInline,
+      trimStart: "",
       startDelimiter: "",
       endDelimiter: "",
+      trimEnd: "",
       parent: {} as GoRoot,
       aliasedContent: "{{ prettier-ignore }}\ninline-2",
       content: "",
@@ -94,8 +102,10 @@ describe("hasPrettierIgnoreLine", () => {
       index: 0,
       length: 12,
       statement: "variable",
+      trimStart: "",
       startDelimiter: "",
       endDelimiter: "",
+      trimEnd: "",
       parent: {} as GoBlock,
     };
 
@@ -108,8 +118,10 @@ describe("hasPrettierIgnoreLine", () => {
       children: { "inline-1": mockInline },
       start: {} as GoInline,
       end: {} as GoInline,
+      trimStart: "",
       startDelimiter: "",
       endDelimiter: "",
+      trimEnd: "",
       parent: {} as GoRoot,
       aliasedContent: "<!-- some comment -->\ninline-1",
       content: "",
@@ -133,8 +145,10 @@ describe("isPrettierIgnoreBlock", () => {
       children: {},
       start: {} as GoInline,
       end: {} as GoInline,
+      trimStart: "",
       startDelimiter: "",
       endDelimiter: "",
+      trimEnd: "",
       parent: {} as GoRoot,
       content: "",
       aliasedContent: "",
@@ -154,8 +168,10 @@ describe("isPrettierIgnoreBlock", () => {
       children: {},
       start: {} as GoInline,
       end: {} as GoInline,
+      trimStart: "",
       startDelimiter: "",
       endDelimiter: "",
+      trimEnd: "",
       parent: {} as GoRoot,
       content: "",
       aliasedContent: "",
@@ -172,8 +188,10 @@ describe("isPrettierIgnoreBlock", () => {
       index: 0,
       length: 12,
       statement: "variable",
+      trimStart: "",
       startDelimiter: "",
       endDelimiter: "",
+      trimEnd: "",
       parent: {} as GoBlock,
     };
 

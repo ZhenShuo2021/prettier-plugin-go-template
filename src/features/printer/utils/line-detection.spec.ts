@@ -14,8 +14,10 @@ describe("hasNodeLinebreak", () => {
       index: 0,
       length: 12,
       statement: "variable",
+      trimStart: "",
       startDelimiter: "",
       endDelimiter: "",
+      trimEnd: "",
       parent: {} as GoBlock,
     };
 
@@ -30,8 +32,10 @@ describe("hasNodeLinebreak", () => {
       index: 0,
       length: 12,
       statement: "variable",
+      trimStart: "",
       startDelimiter: "",
       endDelimiter: "",
+      trimEnd: "",
       parent: {} as GoBlock,
     };
 
@@ -46,8 +50,10 @@ describe("hasNodeLinebreak", () => {
       index: 0,
       length: 12,
       statement: "variable",
+      trimStart: "",
       startDelimiter: "",
       endDelimiter: "",
+      trimEnd: "",
       parent: {} as GoBlock,
     };
 
@@ -66,8 +72,10 @@ describe("isFollowedByEmptyLine", () => {
       index: 0,
       length: 12,
       statement: "variable",
+      trimStart: "",
       startDelimiter: "",
       endDelimiter: "",
+      trimEnd: "",
       parent: {} as GoBlock,
     };
 
@@ -82,8 +90,10 @@ describe("isFollowedByEmptyLine", () => {
       index: 0,
       length: 12,
       statement: "variable",
+      trimStart: "",
       startDelimiter: "",
       endDelimiter: "",
+      trimEnd: "",
       parent: {} as GoBlock,
     };
 
@@ -98,8 +108,10 @@ describe("isFollowedByEmptyLine", () => {
       index: 0,
       length: 12,
       statement: "variable",
+      trimStart: "",
       startDelimiter: "",
       endDelimiter: "",
+      trimEnd: "",
       parent: {} as GoBlock,
     };
 
@@ -118,8 +130,10 @@ describe("isFollowedByNode", () => {
       children: { "id-1": {} as GoInline, "id-2": {} as GoInline },
       start: {} as GoInline,
       end: {} as GoInline,
+      trimStart: "",
       startDelimiter: "",
       endDelimiter: "",
+      trimEnd: "",
       parent: {} as any,
       aliasedContent: "id-1   \n   id-2",
       content: "",
@@ -132,8 +146,10 @@ describe("isFollowedByNode", () => {
       index: 0,
       length: 4,
       statement: "test",
+      trimStart: "",
       startDelimiter: "",
       endDelimiter: "",
+      trimEnd: "",
       parent: mockBlock,
     };
 
@@ -150,8 +166,10 @@ describe("isFollowedByNode", () => {
       children: { "id-1": {} as GoInline, "id-2": {} as GoInline },
       start: {} as GoInline,
       end: {} as GoInline,
+      trimStart: "",
       startDelimiter: "",
       endDelimiter: "",
+      trimEnd: "",
       parent: {} as any,
       aliasedContent: "id-1 content id-2",
       content: "",
@@ -164,8 +182,10 @@ describe("isFollowedByNode", () => {
       index: 0,
       length: 4,
       statement: "test",
+      trimStart: "",
       startDelimiter: "",
       endDelimiter: "",
+      trimEnd: "",
       parent: mockBlock,
     };
 

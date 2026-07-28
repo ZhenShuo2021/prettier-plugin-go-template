@@ -1,4 +1,5 @@
-export type GoSharedDelimiter = "%" | "-" | "";
+export type GoTrimMarker = "-" | "";
+export type GoSharedDelimiter = "%" | "";
 export type GoInlineStartDelimiter = "<" | "/*" | GoSharedDelimiter;
 export type GoInlineEndDelimiter = ">" | "*/" | GoSharedDelimiter;
 
@@ -25,8 +26,10 @@ export interface GoBaseNode<Type extends string> {
  * Carries explicit start/end delimiter variants used by Go template statements.
  */
 export interface WithDelimiter {
+  trimStart: GoTrimMarker;
   startDelimiter: GoInlineStartDelimiter;
   endDelimiter: GoInlineEndDelimiter;
+  trimEnd: GoTrimMarker;
 }
 
 export interface GoInline extends GoBaseNode<"inline">, WithDelimiter {
@@ -72,8 +75,10 @@ export type GoRoot = { type: "root" } & Omit<
   | "parent"
   | "statement"
   | "id"
+  | "trimStart"
   | "startDelimiter"
   | "endDelimiter"
+  | "trimEnd"
   | "start"
   | "end"
 >;

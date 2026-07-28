@@ -18,8 +18,10 @@ describe("printStatement", () => {
 
   it("should accept custom delimiters", () => {
     const result = printStatement("variable", true, {
-      start: "-",
-      end: "-",
+      trimStart: "-",
+      start: "/*",
+      end: "*/",
+      trimEnd: "-",
     });
 
     expect(result).toBeDefined();
