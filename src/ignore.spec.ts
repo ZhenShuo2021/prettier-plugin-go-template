@@ -23,6 +23,7 @@ describe("hasPrettierIgnoreLine", () => {
     const mockInline: GoInline = {
       id: "inline-1",
       type: "inline",
+      isComment: false,
       index: 30,
       length: 12,
       statement: "variable",
@@ -61,6 +62,7 @@ describe("hasPrettierIgnoreLine", () => {
     const mockInline: GoInline = {
       id: "inline-2",
       type: "inline",
+      isComment: false,
       index: 20,
       length: 12,
       statement: "variable",
@@ -99,6 +101,7 @@ describe("hasPrettierIgnoreLine", () => {
     const mockInline: GoInline = {
       id: "inline-1",
       type: "inline",
+      isComment: false,
       index: 0,
       length: 12,
       statement: "variable",
@@ -185,6 +188,7 @@ describe("isPrettierIgnoreBlock", () => {
     const mockInline: GoInline = {
       id: "inline-1",
       type: "inline",
+      isComment: false,
       index: 0,
       length: 12,
       statement: "variable",

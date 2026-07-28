@@ -27,7 +27,11 @@ export const parseGoTemplate: Parser<GoNode>["parse"] = (text) => {
   const KEYWORD = String.raw`(?<keyword>if|range|block|with|define|end|else|prettier-ignore-start|prettier-ignore-end)?`;
 
   // Inline/formattable template
-  const INLINE_FORMATTABLE_TEMPLATE = String.raw`{{${TRIM_START}\s*${START_DELIMITER}\s*(?<statement>${KEYWORD}[\s\S]*?)\s*${END_DELIMITER}\s*${TRIM_END}}}`;
+  // leadingWs/trailingWs capture the whitespace immediately inside the
+  // delimiters (e.g. right after "/*" and right before "*/"). They are
+  // ignored for ordinary statements (which are trimmed when printed) but
+  // are needed to reproduce comments verbatim without any reformatting.
+  const INLINE_FORMATTABLE_TEMPLATE = String.raw`{{${TRIM_START}\s*${START_DELIMITER}(?<leadingWs>\s*)(?<statement>${KEYWORD}[\s\S]*?)(?<trailingWs>\s*)${END_DELIMITER}\s*${TRIM_END}}}`;
 
   const buildUnformattableTag = (
     tagName: "script" | "style",
@@ -109,6 +113,10 @@ export const parseGoTemplate: Parser<GoNode>["parse"] = (text) => {
     const endDelimiter = (match.groups?.endDelimiter ??
       "") as GoInlineEndDelimiter;
     const isCommentAction = startDelimiter === "/*" && endDelimiter === "*/";
+    const leadingWs = isCommentAction ? (match.groups?.leadingWs ?? "") : "";
+    const trailingWs = isCommentAction
+      ? (match.groups?.trailingWs ?? "")
+      : "";
 
     if (!isCommentAction && !isValidStatement(statement)) {
       throw Error(
@@ -126,6 +134,9 @@ export const parseGoTemplate: Parser<GoNode>["parse"] = (text) => {
       parent: current!,
       type: "inline",
       statement,
+      isComment: isCommentAction,
+      commentLeadingWs: leadingWs,
+      commentTrailingWs: trailingWs,
       id,
     };
 

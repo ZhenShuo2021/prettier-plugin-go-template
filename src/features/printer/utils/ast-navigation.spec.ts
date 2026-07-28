@@ -10,6 +10,7 @@ describe("getFirstBlockParent", () => {
     const mockInline: GoInline = {
       id: "inline-1",
       type: "inline",
+      isComment: false,
       index: 0,
       length: 10,
       statement: "test",
@@ -69,6 +70,7 @@ describe("getFirstBlockParent", () => {
     const mockInline: GoInline = {
       id: "inline-1",
       type: "inline",
+      isComment: false,
       index: 10,
       length: 10,
       statement: "test",
@@ -90,6 +92,7 @@ describe("isBlockEnd", () => {
     const mockInline: GoInline = {
       id: "end-1",
       type: "inline",
+      isComment: false,
       index: 40,
       length: 10,
       statement: "end",
@@ -128,6 +131,7 @@ describe("isBlockEnd", () => {
     const mockInline: GoInline = {
       id: "inline-1",
       type: "inline",
+      isComment: false,
       index: 10,
       length: 10,
       statement: "test",
@@ -168,6 +172,7 @@ describe("isBlockStart", () => {
     const mockStartInline: GoInline = {
       id: "start-1",
       type: "inline",
+      isComment: false,
       index: 0,
       length: 10,
       statement: "if",
@@ -206,6 +211,7 @@ describe("isBlockStart", () => {
     const mockInline: GoInline = {
       id: "inline-1",
       type: "inline",
+      isComment: false,
       index: 10,
       length: 10,
       statement: "test",

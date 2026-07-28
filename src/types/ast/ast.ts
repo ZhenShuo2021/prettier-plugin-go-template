@@ -34,6 +34,15 @@ export interface WithDelimiter {
 
 export interface GoInline extends GoBaseNode<"inline">, WithDelimiter {
   statement: string;
+  /** True when this node is a Go template comment ({{/* ... *\/}}), whose
+   * inner text must be preserved as-is and never reformatted. */
+  isComment: boolean;
+  /** Raw whitespace between "/*" and the comment text. Only meaningful
+   * when isComment is true; used to reproduce comments verbatim. */
+  commentLeadingWs?: string;
+  /** Raw whitespace between the comment text and "*\/". Only meaningful
+   * when isComment is true; used to reproduce comments verbatim. */
+  commentTrailingWs?: string;
 }
 
 /**

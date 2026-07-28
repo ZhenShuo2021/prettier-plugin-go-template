@@ -11,6 +11,7 @@ describe("hasNodeLinebreak", () => {
     const mockNode: GoInline = {
       id: "inline-1",
       type: "inline",
+      isComment: false,
       index: 0,
       length: 12,
       statement: "variable",
@@ -29,6 +30,7 @@ describe("hasNodeLinebreak", () => {
     const mockNode: GoInline = {
       id: "inline-1",
       type: "inline",
+      isComment: false,
       index: 0,
       length: 12,
       statement: "variable",
@@ -47,6 +49,7 @@ describe("hasNodeLinebreak", () => {
     const mockNode: GoInline = {
       id: "inline-1",
       type: "inline",
+      isComment: false,
       index: 0,
       length: 12,
       statement: "variable",
@@ -69,6 +72,7 @@ describe("isFollowedByEmptyLine", () => {
     const mockNode: GoInline = {
       id: "inline-1",
       type: "inline",
+      isComment: false,
       index: 0,
       length: 12,
       statement: "variable",
@@ -87,6 +91,7 @@ describe("isFollowedByEmptyLine", () => {
     const mockNode: GoInline = {
       id: "inline-1",
       type: "inline",
+      isComment: false,
       index: 0,
       length: 12,
       statement: "variable",
@@ -105,6 +110,7 @@ describe("isFollowedByEmptyLine", () => {
     const mockNode: GoInline = {
       id: "inline-1",
       type: "inline",
+      isComment: false,
       index: 0,
       length: 12,
       statement: "variable",
@@ -143,6 +149,7 @@ describe("isFollowedByNode", () => {
     const mockNode: GoInline = {
       id: "id-1",
       type: "inline",
+      isComment: false,
       index: 0,
       length: 4,
       statement: "test",
@@ -179,6 +186,7 @@ describe("isFollowedByNode", () => {
     const mockNode: GoInline = {
       id: "id-1",
       type: "inline",
+      isComment: false,
       index: 0,
       length: 4,
       statement: "test",

@@ -38,12 +38,19 @@ export function printInline(
       : "";
 
   const result: Doc[] = [
-    printStatement(node.statement, parserOptions.goTemplateBracketSpacing, {
-      trimStart: node.trimStart,
-      start: node.startDelimiter,
-      end: node.endDelimiter,
-      trimEnd: node.trimEnd,
-    }),
+    printStatement(
+      node.statement,
+      parserOptions.goTemplateBracketSpacing,
+      {
+        trimStart: node.trimStart,
+        start: node.startDelimiter,
+        end: node.endDelimiter,
+        trimEnd: node.trimEnd,
+      },
+      node.isComment,
+      node.commentLeadingWs,
+      node.commentTrailingWs,
+    ),
   ];
 
   return builders.group([...result, emptyLine], {
@@ -66,6 +73,9 @@ export function printStatement(
     end: "",
     trimEnd: "",
   },
+  isComment = false,
+  commentLeadingWs = "",
+  commentTrailingWs = "",
 ) {
   const space = addSpaces ? " " : "";
   const shouldBreak = statement.includes("\n");
@@ -78,16 +88,40 @@ export function printStatement(
     delimiter.trimStart && delimiter.start === "/*" ? " " : "";
   const trimEndGap = delimiter.end === "*/" && delimiter.trimEnd ? " " : "";
 
-  const content = shouldBreak
-    ? statement
-        .trim()
-        .split("\n")
-        .map((line, index, array) =>
-          index === array.length - 1
-            ? [line.trim(), builders.softline]
-            : builders.indent([line.trim(), builders.softline]),
-        )
-    : [statement.trim()];
+  // Comments must never have their inner text reformatted: no per-line
+  // trim, no re-indentation, no reflow. Reproduce the original text
+  // (including the whitespace immediately inside the delimiters)
+  // verbatim, using literalline so embedded newlines bypass the doc
+  // printer's indentation logic entirely.
+  const toLiteralDoc = (raw: string): Doc[] =>
+    raw
+      .split("\n")
+      .flatMap((line, index, array) =>
+        index === array.length - 1 ? [line] : [line, builders.literalline],
+      );
+
+  const content = isComment
+    ? [
+        ...toLiteralDoc(commentLeadingWs),
+        ...toLiteralDoc(statement),
+        ...toLiteralDoc(commentTrailingWs),
+      ]
+    : shouldBreak
+      ? statement
+          .trim()
+          .split("\n")
+          .map((line, index, array) =>
+            index === array.length - 1
+              ? [line.trim(), builders.softline]
+              : builders.indent([line.trim(), builders.softline]),
+          )
+      : [statement.trim()];
+
+  // For comments, commentLeadingWs/commentTrailingWs already reproduce the
+  // exact original spacing next to the delimiters, so no extra
+  // goTemplateBracketSpacing padding should be injected there.
+  const leadingSpace = isComment ? "" : space;
+  const trailingSpace = isComment ? "" : shouldBreak ? "" : space;
 
   return builders.group(
     [
@@ -95,9 +129,9 @@ export function printStatement(
       delimiter.trimStart ?? "",
       trimStartGap,
       delimiter.start,
-      space,
+      leadingSpace,
       ...content,
-      shouldBreak ? "" : space,
+      trailingSpace,
       delimiter.end,
       trimEndGap,
       delimiter.trimEnd ?? "",
