@@ -22,9 +22,15 @@ export const parseGoTemplate: Parser<GoNode>["parse"] = (text) => {
   // delimiter so both can appear together, e.g. {{- /* comment */ -}}.
   const TRIM_START = String.raw`(?<trimStart>-)?`;
   const TRIM_END = String.raw`(?<trimEnd>-)?`;
-  const START_DELIMITER = String.raw`(?<startdelimiter><|%|\/\*)?`;
-  const END_DELIMITER = String.raw`(?<endDelimiter>>|%|\*\/)?`;
-  const KEYWORD = String.raw`(?<keyword>if|range|block|with|define|end|else|prettier-ignore-start|prettier-ignore-end)?`;
+  // "/*"/"*/" are intentionally excluded here: comments are matched by a
+  // dedicated branch below so that their termination condition can require
+  // the literal "*/", not just the nearest "}}". Actions never use these
+  // delimiter characters, so excluding them here is not a loss of coverage.
+  const START_DELIMITER = String.raw`(?<startdelimiter><|%)?`;
+  const END_DELIMITER = String.raw`(?<endDelimiter>>|%)?`;
+  const makeKeyword = (groupName: string) =>
+    String.raw`(?<${groupName}>if|range|block|with|define|end|else|prettier-ignore-start|prettier-ignore-end)?`;
+  const KEYWORD = makeKeyword("keyword");
 
   // Inline/formattable template
   // leadingWs/trailingWs capture the whitespace immediately inside the
@@ -32,6 +38,18 @@ export const parseGoTemplate: Parser<GoNode>["parse"] = (text) => {
   // ignored for ordinary statements (which are trimmed when printed) but
   // are needed to reproduce comments verbatim without any reformatting.
   const INLINE_FORMATTABLE_TEMPLATE = String.raw`{{${TRIM_START}\s*${START_DELIMITER}(?<leadingWs>\s*)(?<statement>${KEYWORD}[\s\S]*?)(?<trailingWs>\s*)${END_DELIMITER}\s*${TRIM_END}}}`;
+
+  // Go template comment ({{/* ... */}}). Matched as its own branch, distinct
+  // from INLINE_FORMATTABLE_TEMPLATE, because its content must be treated as
+  // opaque text terminated only by a literal "*/" — not by the nearest "}}".
+  // Without this, a comment whose text happens to contain "{{ ... }}"-looking
+  // content (e.g. documenting template syntax) would have its match cut short
+  // at the first inner "}}", leaving the inner text to be re-parsed as real
+  // template statements. JS regex has no cross-branch conditional groups, and
+  // duplicate named capture groups across alternation branches are not
+  // supported, so this branch uses its own group names ("...Comment") and the
+  // parsing loop below unifies them with the action-branch groups.
+  const INLINE_COMMENT_TEMPLATE = String.raw`{{(?<trimStartComment>-)?\s*\/\*(?<leadingWsComment>\s*)(?<commentStatement>${makeKeyword("keywordComment")}[\s\S]*?)(?<trailingWsComment>\s*)\*\/\s*(?<trimEndComment>-)?}}`;
 
   const buildUnformattableTag = (
     tagName: "script" | "style",
@@ -54,8 +72,16 @@ export const parseGoTemplate: Parser<GoNode>["parse"] = (text) => {
   // Matches:
   // - standard Go template inline statements
   // - script/style regions that contain template markers and must stay raw
+  //
+  // INLINE_COMMENT_TEMPLATE must come before INLINE_FORMATTABLE_TEMPLATE:
+  // both start with the literal "{{", so at a given position the regex
+  // engine tries alternatives left to right and commits to the first one
+  // that matches. Trying the comment branch first ensures genuine comments
+  // are always recognized as comments before the generic action branch gets
+  // a chance to (mis)match a "/* ... */" run as an ordinary statement.
   const GO_TEMPLATE_REGEX = new RegExp(
     [
+      INLINE_COMMENT_TEMPLATE, // {{/* ... */}}
       INLINE_FORMATTABLE_TEMPLATE, // {{ ... }}
       UNFORMATTABLE_SCRIPT, // <script>...{{...}}...</script>
       UNFORMATTABLE_STYLE, // <style>...{{...}}...</style>
@@ -101,21 +127,38 @@ export const parseGoTemplate: Parser<GoNode>["parse"] = (text) => {
       continue;
     }
 
-    const statement = match.groups?.statement;
+    // The comment branch (INLINE_COMMENT_TEMPLATE) and the action branch
+    // (INLINE_FORMATTABLE_TEMPLATE) use distinctly-named capture groups
+    // (see the regex definitions above), so exactly one side is populated
+    // per match. Presence of `commentStatement` is what tells them apart.
+    const isCommentAction = match.groups?.commentStatement !== undefined;
+
+    const statement = isCommentAction
+      ? match.groups?.commentStatement
+      : match.groups?.statement;
     if (statement === undefined) {
       throw Error("Formattable match without statement.");
     }
 
-    const trimStart = (match.groups?.trimStart ?? "") as GoTrimMarker;
-    const trimEnd = (match.groups?.trimEnd ?? "") as GoTrimMarker;
-    const startDelimiter = (match.groups?.startdelimiter ??
-      "") as GoInlineStartDelimiter;
-    const endDelimiter = (match.groups?.endDelimiter ??
-      "") as GoInlineEndDelimiter;
-    const isCommentAction = startDelimiter === "/*" && endDelimiter === "*/";
-    const leadingWs = isCommentAction ? (match.groups?.leadingWs ?? "") : "";
+    const trimStart =
+      (isCommentAction
+        ? match.groups?.trimStartComment
+        : match.groups?.trimStart) ?? ("" as GoTrimMarker);
+    const trimEnd =
+      (isCommentAction
+        ? match.groups?.trimEndComment
+        : match.groups?.trimEnd) ?? ("" as GoTrimMarker);
+    const startDelimiter = (
+      isCommentAction ? "/*" : (match.groups?.startdelimiter ?? "")
+    ) as GoInlineStartDelimiter;
+    const endDelimiter = (
+      isCommentAction ? "*/" : (match.groups?.endDelimiter ?? "")
+    ) as GoInlineEndDelimiter;
+    const leadingWs = isCommentAction
+      ? (match.groups?.leadingWsComment ?? "")
+      : "";
     const trailingWs = isCommentAction
-      ? (match.groups?.trailingWs ?? "")
+      ? (match.groups?.trailingWsComment ?? "")
       : "";
 
     if (!isCommentAction && !isValidStatement(statement)) {
@@ -145,7 +188,9 @@ export const parseGoTemplate: Parser<GoNode>["parse"] = (text) => {
     // (e.g. `{{/* end */}}` or `{{/* if */}}`). The only exception is the
     // `prettier-ignore-start` / `prettier-ignore-end` directives, which are
     // themselves comments and must still be recognized as keywords.
-    const rawKeyword = match.groups?.keyword as GoBlockKeyword | undefined;
+    const rawKeyword = (
+      isCommentAction ? match.groups?.keywordComment : match.groups?.keyword
+    ) as GoBlockKeyword | undefined;
     const isIgnoreDirective =
       rawKeyword === "prettier-ignore-start" ||
       rawKeyword === "prettier-ignore-end";
