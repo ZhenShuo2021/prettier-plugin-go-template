@@ -6,7 +6,11 @@ import astGuards, {
   type GoTrimMarker,
   type GoUnformattable,
 } from "./ast";
-import { isBlockEnd, isBlockStart, getFirstBlockParent } from "./ast-navigation";
+import {
+  isBlockEnd,
+  isBlockStart,
+  getFirstBlockParent,
+} from "./ast-navigation";
 import { hasPrettierIgnoreLine, isPrettierIgnoreBlock } from "./ignore";
 import {
   doc,
@@ -155,10 +159,7 @@ export function printMultiBlock(
   return path.map(print, "blocks");
 }
 
-export function printInline(
-  node: GoInline,
-  parserOptions: ParserOptions,
-): Doc {
+export function printInline(node: GoInline, parserOptions: ParserOptions): Doc {
   const isBlockNode = isBlockEnd(node) || isBlockStart(node);
   const emptyLine =
     isFollowedByEmptyLine(node, parserOptions.originalText) &&

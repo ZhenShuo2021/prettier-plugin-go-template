@@ -127,11 +127,11 @@ whether more than one of these mechanisms is acting on that same boundary.
 
 ## File map
 
-| Concept | File |
-|---|---|
-| Source text → node tree, node content → aliasedContent, statement validation | `src/parsers.ts` |
-| Node type definitions and type guards (isBlock/isRoot/isMultiBlock/...) | `src/ast.ts` |
-| embed: calling the HTML parser, restoring children, ignore short-circuits, printing of standalone inline nodes, source-position/whitespace inspection helpers | `src/printers.ts` |
-| AST traversal helpers (parent block, siblings) | `src/ast-navigation.ts` |
-| `prettier-ignore` family of rules | `src/ignore.ts` |
-| Plugin assembly (`languages`/`parsers`/`printers` exports) | `src/index.ts` |
+| Concept                                                                                                                                                       | File                    |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------- |
+| Source text → node tree, node content → aliasedContent, statement validation                                                                                  | `src/parsers.ts`        |
+| Node type definitions and type guards (isBlock/isRoot/isMultiBlock/...)                                                                                       | `src/ast.ts`            |
+| embed: calling the HTML parser, restoring children, ignore short-circuits, printing of standalone inline nodes, source-position/whitespace inspection helpers | `src/printers.ts`       |
+| AST traversal helpers (parent block, siblings)                                                                                                                | `src/ast-navigation.ts` |
+| `prettier-ignore` family of rules                                                                                                                             | `src/ignore.ts`         |
+| Plugin assembly (`languages`/`parsers`/`printers` exports)                                                                                                    | `src/index.ts`          |

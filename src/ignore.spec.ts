@@ -1,7 +1,4 @@
-import {
-  hasPrettierIgnoreLine,
-  isPrettierIgnoreBlock,
-} from "./ignore";
+import { hasPrettierIgnoreLine, isPrettierIgnoreBlock } from "./ignore";
 import type { GoNode, GoBlock, GoInline, GoRoot } from "./ast";
 
 describe("hasPrettierIgnoreLine", () => {

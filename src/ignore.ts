@@ -1,8 +1,5 @@
 import astGuards, { type GoNode } from "./ast";
-import {
-  getFirstBlockParent,
-  getPreviousSibling,
-} from "./ast-navigation";
+import { getFirstBlockParent, getPreviousSibling } from "./ast-navigation";
 
 /**
  * True when `node` is itself a `{{/* prettier-ignore *\/}}` (or with trim
