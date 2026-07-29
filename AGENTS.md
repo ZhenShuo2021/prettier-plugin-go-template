@@ -4,14 +4,9 @@
 
 Prettier plugin that formats Hugo/Go template files. Peer dependency: `prettier ^3.0.0`. TypeScript source lives in `src/`, compiled output in `dist/`.
 
-Supported extensions: `.go.html`, `.gohtml`, `.gotmpl`, `.go.tmpl`, `.tmpl`, `.tpl`, `.html.tmpl`, `.html.tpl`.
-
-> See [README.md](README.md) for project intent.
-
 ## Documentation
 
 - Developer-facing docs live under [docs/develop](docs/develop).
-- User-facing docs live under [docs/guidance](docs/guidance).
 - Add new docs to the appropriate folder instead of the repository root.
 - Keep this file in sync with any documentation or workflow changes.
 
@@ -43,7 +38,7 @@ Fixture-based; test harness is [`src/index.spec.ts`](src/index.spec.ts).
 
 Each test case is a subdirectory under [`src/tests/`](src/tests/):
 
-```
+```text
 src/tests/<test-name>/
   input.html     # template to format
   expected.html  # expected output — or Error("message") to assert a thrown error
@@ -61,12 +56,6 @@ All subdirectories are **auto-discovered** — no manual registration. A **secon
 - **`<script>` / `<style>` blocks** containing `{{}}` become `GoUnformattable` nodes and must be preserved byte-for-byte.
 - **Stack-based parser**: unmatched `{{end}}` blocks throw `Error("Missing end block.")` — cover new block types with an error fixture.
 - **Consumer runtime differs from test runtime**: always run `pnpm run test:runtime` before release to catch ESM/CJS interop issues in `dist/`.
-
-## Publishing
-
-Publishing details are centralized in [docs/develop/publishing.md](docs/develop/publishing.md).
-
-- Workflow file: [.github/workflows/publish.yaml](.github/workflows/publish.yaml)
 
 ## Plugin Option
 
