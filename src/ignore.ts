@@ -3,7 +3,7 @@ import astGuards from "@/ast";
 import {
   getFirstBlockParent,
   getPreviousSibling,
-} from "@/features/printer/utils/ast-navigation";
+} from "@/ast-navigation";
 
 /**
  * True when `node` is itself a `{{/* prettier-ignore *\/}}` (or with trim

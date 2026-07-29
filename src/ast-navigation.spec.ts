@@ -3,7 +3,7 @@ import {
   getFirstBlockParent,
   isBlockEnd,
   isBlockStart,
-} from "@/features/printer/utils/ast-navigation";
+} from "@/ast-navigation";
 
 describe("getFirstBlockParent", () => {
   it("should return the parent node if it is a block", () => {

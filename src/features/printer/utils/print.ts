@@ -7,7 +7,7 @@ import type {
 } from "@/ast";
 import { type AstPath, type Doc, type ParserOptions } from "prettier";
 import pkg from "prettier/doc.js";
-import { isBlockEnd, isBlockStart } from "./ast-navigation";
+import { isBlockEnd, isBlockStart } from "@/ast-navigation";
 import {
   hasNodeLinebreak,
   isFollowedByEmptyLine,
