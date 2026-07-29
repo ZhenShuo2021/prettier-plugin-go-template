@@ -48,7 +48,8 @@ describe("parseGoTemplate error guards", () => {
   // Uses a mock because normal input should not empty the stack mid-loop.
   // Real-world cause (rare): internal state corruption by future refactors.
   it('throws "Node stack empty." when parsing text with an empty stack state', async () => {
-    vi.doMock("@/utils/last", () => ({
+    vi.doMock("@/utils", () => ({
+      createIdGenerator: () => () => "mock-id",
       default: () => undefined,
     }));
 
@@ -99,7 +100,8 @@ describe("parseGoTemplate error guards", () => {
   // shape with `children` in this branch. Real-world cause (rare): malformed
   // parent linkage introduced by block/else handling refactors.
   it('throws "Could not find child in parent." for malformed {{ else }} parent linkage', async () => {
-    vi.doMock("@/utils/last", () => ({
+    vi.doMock("@/utils", () => ({
+      createIdGenerator: () => () => "mock-id",
       default: () => ({
         type: "block",
         id: "block-id",

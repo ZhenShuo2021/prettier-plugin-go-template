@@ -10,8 +10,7 @@ import type {
   GoMultiBlock,
 } from "@/types/ast/ast";
 import astGuards from "@/types/ast/ast-guards";
-import { createIdGenerator } from "@/utils/create-id-generator";
-import last from "@/utils/last";
+import { createIdGenerator, default as last } from "@/utils";
 import type { Parser } from "prettier";
 import { aliasNodeContent } from "@/features/parser/alias-node-content";
 import { isValidStatement } from "@/features/parser/is-valid-statement";
