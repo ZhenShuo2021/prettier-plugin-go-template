@@ -8,7 +8,6 @@ import type {
 } from "@/ast";
 import astGuards from "@/ast";
 import { isBlockEnd, isBlockStart, getFirstBlockParent } from "@/ast-navigation";
-import constants from "@/constants";
 import { hasPrettierIgnoreLine, isPrettierIgnoreBlock } from "@/ignore";
 import {
   doc,
@@ -23,31 +22,34 @@ const { builders, utils } = pkg;
 
 type ExtendedParserOptions = ParserOptions<GoNode>;
 
-const printers = {
-  [constants.PLUGIN_KEY]: <Printer<GoNode>>{
-    print: (path, printOptions: ExtendedParserOptions, print) => {
-      const node = path.getNode();
+/**
+ * The plugin's Printer definition for the "go-template" astFormat. Consumed
+ * (and keyed under the plugin's PLUGIN_KEY) by index.ts, which owns
+ * assembling the final `printers` export required by the Prettier plugin API.
+ */
+const goTemplatePrinter: Printer<GoNode> = {
+  print: (path, printOptions: ExtendedParserOptions, print) => {
+    const node = path.getNode();
 
-      switch (node?.type) {
-        case "inline":
-          return printInline(node, printOptions);
-        case "double-block":
-          return printMultiBlock(path, print);
-        case "unformattable":
-          return printUnformattable(node, printOptions);
-      }
+    switch (node?.type) {
+      case "inline":
+        return printInline(node, printOptions);
+      case "double-block":
+        return printMultiBlock(path, print);
+      case "unformattable":
+        return printUnformattable(node, printOptions);
+    }
 
-      throw new Error(
-        `An error occured during printing. Found invalid node ${node?.type}.`,
-      );
-    },
-    embed: (path, parserOptions) => {
-      return embed(path, parserOptions);
-    },
+    throw new Error(
+      `An error occured during printing. Found invalid node ${node?.type}.`,
+    );
+  },
+  embed: (path, parserOptions) => {
+    return embed(path, parserOptions);
   },
 };
 
-export default printers;
+export default goTemplatePrinter;
 
 const embed: Exclude<Printer<GoNode>["embed"], undefined> = () => {
   return async (textToDoc, print, path, optionsA) => {

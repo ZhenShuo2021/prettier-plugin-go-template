@@ -357,16 +357,19 @@ export function isValidStatement(statement: string): boolean {
   return state === "normal";
 }
 
-const parsers = {
-  [constants.PLUGIN_KEY]: <Parser<GoNode>>{
-    astFormat: constants.PLUGIN_KEY,
-    preprocess: (text) =>
-      // Cut away trailing newline to normalize formatting.
-      text.endsWith("\n") ? text.slice(0, text.length - 1) : text,
-    parse: parseGoTemplate,
-    locStart: (node) => node.index,
-    locEnd: (node) => node.index + node.length,
-  },
+/**
+ * The plugin's Parser definition for the "go-template" astFormat. Consumed
+ * (and keyed under the plugin's PLUGIN_KEY) by index.ts, which owns
+ * assembling the final `parsers` export required by the Prettier plugin API.
+ */
+const goTemplateParser: Parser<GoNode> = {
+  astFormat: constants.PLUGIN_KEY,
+  preprocess: (text) =>
+    // Cut away trailing newline to normalize formatting.
+    text.endsWith("\n") ? text.slice(0, text.length - 1) : text,
+  parse: parseGoTemplate,
+  locStart: (node) => node.index,
+  locEnd: (node) => node.index + node.length,
 };
 
-export default parsers;
+export default goTemplateParser;
