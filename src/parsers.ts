@@ -1,15 +1,14 @@
-import type {
-  GoBlock,
-  GoBlockKeyword,
-  GoInline,
-  GoInlineEndDelimiter,
-  GoInlineStartDelimiter,
-  GoMultiBlock,
-  GoNode,
-  GoRoot,
-  GoTrimMarker,
+import astGuards, {
+  type GoBlock,
+  type GoBlockKeyword,
+  type GoInline,
+  type GoInlineEndDelimiter,
+  type GoInlineStartDelimiter,
+  type GoMultiBlock,
+  type GoNode,
+  type GoRoot,
+  type GoTrimMarker,
 } from "./ast";
-import astGuards from "./ast";
 import constants from "./constants";
 import { createIdGenerator, default as last } from "./utils";
 import type { Parser } from "prettier";

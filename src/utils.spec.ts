@@ -1,5 +1,4 @@
-import { createIdGenerator } from "./utils";
-import last from "./utils";
+import last, { createIdGenerator } from "./utils";
 
 describe("createIdGenerator", () => {
   it("should generate unique IDs on each call", () => {

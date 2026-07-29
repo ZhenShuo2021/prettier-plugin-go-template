@@ -1,12 +1,11 @@
-import type {
-  GoInline,
-  GoInlineEndDelimiter,
-  GoInlineStartDelimiter,
-  GoNode,
-  GoTrimMarker,
-  GoUnformattable,
+import astGuards, {
+  type GoInline,
+  type GoInlineEndDelimiter,
+  type GoInlineStartDelimiter,
+  type GoNode,
+  type GoTrimMarker,
+  type GoUnformattable,
 } from "./ast";
-import astGuards from "./ast";
 import { isBlockEnd, isBlockStart, getFirstBlockParent } from "./ast-navigation";
 import { hasPrettierIgnoreLine, isPrettierIgnoreBlock } from "./ignore";
 import {

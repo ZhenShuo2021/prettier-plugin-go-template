@@ -1,5 +1,9 @@
-import type { GoBlock, GoInline, GoNode, GoRoot } from "./ast";
-import astGuards from "./ast";
+import astGuards, {
+  type GoBlock,
+  type GoInline,
+  type GoNode,
+  type GoRoot,
+} from "./ast";
 
 export function getFirstBlockParent(node: Exclude<GoNode, GoRoot>): {
   parent: GoBlock | GoRoot;
