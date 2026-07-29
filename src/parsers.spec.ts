@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { parseGoTemplate, isValidStatement } from "@/parsers";
-import type { GoNode } from "@/ast";
+import { parseGoTemplate, isValidStatement } from "./parsers";
+import type { GoNode } from "./ast";
 import type { ParserOptions } from "prettier";
 
 const parserOptions = {} as ParserOptions<GoNode>;
@@ -48,7 +48,7 @@ describe("parseGoTemplate error guards", () => {
   // Uses a mock because normal input should not empty the stack mid-loop.
   // Real-world cause (rare): internal state corruption by future refactors.
   it('throws "Node stack empty." when parsing text with an empty stack state', async () => {
-    vi.doMock("@/utils", () => ({
+    vi.doMock("./utils", () => ({
       createIdGenerator: () => () => "mock-id",
       default: () => undefined,
     }));
@@ -57,7 +57,7 @@ describe("parseGoTemplate error guards", () => {
       createMockMatch(0),
     ] as any);
 
-    const { parseGoTemplate } = await import("@/parsers");
+    const { parseGoTemplate } = await import("./parsers");
 
     expect(() => parseGoTemplate("{{ if true }}", parserOptions)).toThrow(
       new Error("Node stack empty."),
@@ -100,7 +100,7 @@ describe("parseGoTemplate error guards", () => {
   // shape with `children` in this branch. Real-world cause (rare): malformed
   // parent linkage introduced by block/else handling refactors.
   it('throws "Could not find child in parent." for malformed {{ else }} parent linkage', async () => {
-    vi.doMock("@/utils", () => ({
+    vi.doMock("./utils", () => ({
       createIdGenerator: () => () => "mock-id",
       default: () => ({
         type: "block",
@@ -117,7 +117,7 @@ describe("parseGoTemplate error guards", () => {
       }),
     ] as any);
 
-    const { parseGoTemplate } = await import("@/parsers");
+    const { parseGoTemplate } = await import("./parsers");
 
     expect(() => parseGoTemplate("{{ else }}", parserOptions)).toThrow(
       new Error("Could not find child in parent."),

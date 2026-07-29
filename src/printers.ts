@@ -5,10 +5,10 @@ import type {
   GoNode,
   GoTrimMarker,
   GoUnformattable,
-} from "@/ast";
-import astGuards from "@/ast";
-import { isBlockEnd, isBlockStart, getFirstBlockParent } from "@/ast-navigation";
-import { hasPrettierIgnoreLine, isPrettierIgnoreBlock } from "@/ignore";
+} from "./ast";
+import astGuards from "./ast";
+import { isBlockEnd, isBlockStart, getFirstBlockParent } from "./ast-navigation";
+import { hasPrettierIgnoreLine, isPrettierIgnoreBlock } from "./ignore";
 import {
   doc,
   type AstPath,

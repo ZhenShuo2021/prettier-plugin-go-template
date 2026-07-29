@@ -8,10 +8,10 @@ import type {
   GoNode,
   GoRoot,
   GoTrimMarker,
-} from "@/ast";
-import astGuards from "@/ast";
-import constants from "@/constants";
-import { createIdGenerator, default as last } from "@/utils";
+} from "./ast";
+import astGuards from "./ast";
+import constants from "./constants";
+import { createIdGenerator, default as last } from "./utils";
 import type { Parser } from "prettier";
 
 export const parseGoTemplate: Parser<GoNode>["parse"] = (text) => {

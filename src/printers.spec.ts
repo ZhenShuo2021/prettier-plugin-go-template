@@ -4,8 +4,8 @@ import {
   hasNodeLinebreak,
   isFollowedByEmptyLine,
   isFollowedByNode,
-} from "@/printers";
-import type { GoInline, GoBlock } from "@/ast";
+} from "./printers";
+import type { GoInline, GoBlock } from "./ast";
 
 describe("printStatement", () => {
   it("should return a Doc object", () => {

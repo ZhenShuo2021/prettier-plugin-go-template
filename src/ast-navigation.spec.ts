@@ -1,9 +1,9 @@
-import type { GoInline, GoBlock, GoRoot } from "@/ast";
+import type { GoInline, GoBlock, GoRoot } from "./ast";
 import {
   getFirstBlockParent,
   isBlockEnd,
   isBlockStart,
-} from "@/ast-navigation";
+} from "./ast-navigation";
 
 describe("getFirstBlockParent", () => {
   it("should return the parent node if it is a block", () => {
