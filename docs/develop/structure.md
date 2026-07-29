@@ -24,7 +24,7 @@ can or cannot see at that point?
 
 ## Node model
 
-Source text is parsed into a tree of nodes (`src/types/ast/ast.ts`):
+Source text is parsed into a tree of nodes (`src/ast.ts`):
 
 - **root** — the whole file.
 - **block** — a Go-template construct with a matching start/end pair and
@@ -46,23 +46,23 @@ or look at its siblings.
 source text
     │  parse: scan for {{ }} actions and unformattable regions,
     │  build the node tree above
-    │  (src/features/parser/parse-go-template.ts)
+    │  (src/parsers.ts)
     ▼
 node tree, each root/block node holding two versions of its own content:
     │  - content:          the original text, verbatim
     │  - aliasedContent:    the same text, but with each *direct child's*
     │                       span replaced by that child's id
-    │  (src/features/parser/alias-node-content.ts)
+    │  (src/parsers.ts)
     ▼
     │  embed: hand aliasedContent to Prettier's built-in HTML parser
-    │  (src/features/printer/printers.ts)
+    │  (src/printers.ts)
     ▼
 an HTML-formatted Doc tree, in which the ids appear as ordinary opaque text
 (the HTML parser doesn't know they're special — it just sees strings)
     │  restore: walk the Doc, find each child id, and replace it with that
     │  child's own printed output (which recurses through this same
     │  pipeline for block children, or prints directly for inline children)
-    │  (src/features/printer/printers.ts, via mapDoc)
+    │  (src/printers.ts, via mapDoc)
     ▼
 final Doc → output text
 ```
@@ -129,12 +129,9 @@ whether more than one of these mechanisms is acting on that same boundary.
 
 | Concept | File |
 |---|---|
-| Source text → node tree | `src/features/parser/parse-go-template.ts` |
-| Node content → aliasedContent (children replaced with ids) | `src/features/parser/alias-node-content.ts` |
-| Node type definitions | `src/types/ast/ast.ts` |
-| Node type guards (isBlock/isRoot/isMultiBlock/...) | `src/types/ast/ast-guards.ts` |
-| embed: calling the HTML parser, restoring children, ignore short-circuits | `src/features/printer/printers.ts` |
-| Printing of standalone inline nodes | `src/features/printer/utils/print.ts` |
-| Source-position/whitespace inspection helpers | `src/features/printer/utils/line-detection.ts` |
-| AST traversal helpers (parent block, siblings) | `src/features/printer/utils/ast-navigation.ts` |
+| Source text → node tree, node content → aliasedContent, statement validation | `src/parsers.ts` |
+| Node type definitions and type guards (isBlock/isRoot/isMultiBlock/...) | `src/ast.ts` |
+| embed: calling the HTML parser, restoring children, ignore short-circuits, printing of standalone inline nodes, source-position/whitespace inspection helpers | `src/printers.ts` |
+| AST traversal helpers (parent block, siblings) | `src/ast-navigation.ts` |
 | `prettier-ignore` family of rules | `src/ignore.ts` |
+| Plugin assembly (`languages`/`parsers`/`printers` exports) | `src/index.ts` |
