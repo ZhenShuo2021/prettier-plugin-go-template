@@ -5,7 +5,6 @@ import type {
   GoTrimMarker,
   GoUnformattable,
 } from "@/types/ast/ast";
-import type { GoTemplateParserOptions } from "@/types/go-template-parser-options";
 import { type AstPath, type Doc, type ParserOptions } from "prettier";
 import pkg from "prettier/doc.js";
 import { isBlockEnd, isBlockStart } from "./ast-navigation";
@@ -17,7 +16,7 @@ import {
 
 const { builders } = pkg;
 
-type ExtendedParserOptions = ParserOptions & GoTemplateParserOptions;
+type ExtendedParserOptions = ParserOptions;
 
 export function printMultiBlock(
   path: AstPath,
@@ -40,7 +39,6 @@ export function printInline(
   const result: Doc[] = [
     printStatement(
       node.statement,
-      parserOptions.goTemplateBracketSpacing,
       {
         trimStart: node.trimStart,
         start: node.startDelimiter,
@@ -61,7 +59,6 @@ export function printInline(
 
 export function printStatement(
   statement: string,
-  addSpaces: boolean,
   delimiter: {
     trimStart?: GoTrimMarker;
     start: GoInlineStartDelimiter;
@@ -77,13 +74,13 @@ export function printStatement(
   commentLeadingWs = "",
   commentTrailingWs = "",
 ) {
-  const space = addSpaces ? " " : "";
+  const space = " ";
   const shouldBreak = statement.includes("\n");
 
   // Go template trim markers ("-") require whitespace after them to be
   // recognized as trim markers at all; without it, "{{-/* ... */-}}"
   // is not valid trim syntax. This is a hard syntactic requirement, not
-  // a style choice, so it applies regardless of goTemplateBracketSpacing.
+  // a style choice.
   const trimStartGap =
     delimiter.trimStart && delimiter.start === "/*" ? " " : "";
   const trimEndGap = delimiter.end === "*/" && delimiter.trimEnd ? " " : "";
@@ -119,7 +116,7 @@ export function printStatement(
 
   // For comments, commentLeadingWs/commentTrailingWs already reproduce the
   // exact original spacing next to the delimiters, so no extra
-  // goTemplateBracketSpacing padding should be injected there.
+  // padding should be injected there.
   const leadingSpace = isComment ? "" : space;
   const trailingSpace = isComment ? "" : shouldBreak ? "" : space;
 

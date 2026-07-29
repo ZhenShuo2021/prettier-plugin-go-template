@@ -1,5 +1,4 @@
 import type { GoNode } from "@/types/ast/ast";
-import type { GoTemplateParserOptions } from "@/types/go-template-parser-options";
 import constants from "@/config/constants";
 import { doc, type Doc, type ParserOptions, type Printer } from "prettier";
 import astGuards from "@/types/ast/ast-guards";
@@ -18,7 +17,7 @@ import {
 
 const { builders, utils } = pkg;
 
-type ExtendedParserOptions = ParserOptions<GoNode> & GoTemplateParserOptions;
+type ExtendedParserOptions = ParserOptions<GoNode>;
 
 const printers = {
   [constants.PLUGIN_KEY]: <Printer<GoNode>>{

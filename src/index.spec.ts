@@ -3,9 +3,8 @@ import * as GoTemplatePlugin from "./index";
 import { readdirSync, readFileSync, existsSync } from "fs";
 import { join } from "path";
 import { fileURLToPath } from "url";
-import type { GoTemplateParserOptions } from "./types/go-template-parser-options";
 
-const prettify = (code: string, options: Partial<GoTemplateParserOptions>) =>
+const prettify = (code: string, options: Record<string, unknown>) =>
   Promise.resolve(
     prettier.format(code, {
       parser: "go-template" as any,

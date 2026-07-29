@@ -2,22 +2,14 @@ import { printStatement, printPlainBlock } from "./print";
 
 describe("printStatement", () => {
   it("should return a Doc object", () => {
-    const result = printStatement("variable", true);
+    const result = printStatement("variable");
 
     expect(result).toBeDefined();
     expect(typeof result).not.toBe("string");
   });
 
-  it("should handle statements with and without spacing", () => {
-    const resultWithSpaces = printStatement("variable", true);
-    const resultWithoutSpaces = printStatement("variable", false);
-
-    expect(resultWithSpaces).toBeDefined();
-    expect(resultWithoutSpaces).toBeDefined();
-  });
-
   it("should accept custom delimiters", () => {
-    const result = printStatement("variable", true, {
+    const result = printStatement("variable", {
       trimStart: "-",
       start: "/*",
       end: "*/",
@@ -29,13 +21,13 @@ describe("printStatement", () => {
 
   it("should handle multiline statements", () => {
     const multilineStatement = "if test\n  result\nend";
-    const result = printStatement(multilineStatement, true);
+    const result = printStatement(multilineStatement);
 
     expect(result).toBeDefined();
   });
 
   it("should handle empty statements", () => {
-    const result = printStatement("", true);
+    const result = printStatement("");
 
     expect(result).toBeDefined();
   });

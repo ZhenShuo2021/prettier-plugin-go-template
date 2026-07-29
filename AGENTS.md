@@ -42,7 +42,7 @@ Each test case is a subdirectory under [`src/tests/`](src/tests/):
 src/tests/<test-name>/
   input.html     # template to format
   expected.html  # expected output — or Error("message") to assert a thrown error
-  config.json    # optional: plugin option overrides (e.g. {"goTemplateBracketSpacing": false})
+  config.json    # optional: prettier option overrides
 ```
 
 All subdirectories are **auto-discovered** — no manual registration. A **second format pass** is always run; it must produce identical output (idempotency check).
@@ -55,12 +55,6 @@ All subdirectories are **auto-discovered** — no manual registration. A **secon
 - **`oxlint` is the standard linter** — keep documentation and scripts aligned with `package.json` lint commands.
 - **`<script>` / `<style>` blocks** containing `{{}}` become `GoUnformattable` nodes and must be preserved byte-for-byte.
 - **Stack-based parser**: unmatched `{{end}}` blocks throw `Error("Missing end block.")` — cover new block types with an error fixture.
-
-## Plugin Option
-
-| Option                     | Type    | Default | Effect                     |
-| -------------------------- | ------- | ------- | -------------------------- |
-| `goTemplateBracketSpacing` | boolean | `true`  | `{{ stmt }}` vs `{{stmt}}` |
 
 ## Documentation Upkeep
 
