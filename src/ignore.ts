@@ -1,10 +1,35 @@
 import type { GoNode } from "@/types/ast/ast";
 import astGuards from "@/types/ast/ast-guards";
-import { getFirstBlockParent } from "@/features/printer/utils/ast-navigation";
+import {
+  getFirstBlockParent,
+  getPreviousSibling,
+} from "@/features/printer/utils/ast-navigation";
+
+/**
+ * True when `node` is itself a `{{/* prettier-ignore *\/}}` (or with trim
+ * markers, `{{- /* prettier-ignore *\/ -}}`) comment node.
+ */
+function isPrettierIgnoreComment(node: GoNode): boolean {
+  return (
+    node.type === "inline" &&
+    node.isComment &&
+    node.statement.trim() === "prettier-ignore"
+  );
+}
 
 export function hasPrettierIgnoreLine(node: GoNode): boolean {
   if (astGuards.isRoot(node)) {
     return false;
+  }
+
+  // A {{/* prettier-ignore */}} comment is parsed as its own standalone
+  // node, so by the time we get here its text has already been aliased
+  // away into an id — the regex below can no longer see it. Check the AST
+  // directly: is the immediately preceding sibling a prettier-ignore
+  // comment node?
+  const previousSibling = getPreviousSibling(node);
+  if (previousSibling && isPrettierIgnoreComment(previousSibling)) {
+    return true;
   }
 
   const { parent, child } = getFirstBlockParent(node);
