@@ -94,3 +94,19 @@ export type GoRoot = { type: "root" } & Omit<
 
 export type GoNode =
   GoRoot | GoBlock | GoInline | GoMultiBlock | GoUnformattable;
+
+const astGuards = {
+  isBlock(node: GoNode): node is GoBlock {
+    return node.type === "block";
+  },
+
+  isMultiBlock(node: GoNode): node is GoMultiBlock {
+    return node.type === "double-block";
+  },
+
+  isRoot(node: GoNode): node is GoRoot {
+    return node.type === "root";
+  },
+};
+
+export default astGuards;

@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { parseGoTemplate } from "./parse-go-template";
-import type { GoNode } from "@/types/ast/ast";
+import type { GoNode } from "@/ast";
 import type { ParserOptions } from "prettier";
 
 const parserOptions = {} as ParserOptions<GoNode>;

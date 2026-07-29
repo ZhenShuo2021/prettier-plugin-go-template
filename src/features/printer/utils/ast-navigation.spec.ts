@@ -1,4 +1,4 @@
-import type { GoInline, GoBlock, GoRoot } from "@/types/ast/ast";
+import type { GoInline, GoBlock, GoRoot } from "@/ast";
 import {
   getFirstBlockParent,
   isBlockEnd,

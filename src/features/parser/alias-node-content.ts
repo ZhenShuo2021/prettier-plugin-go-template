@@ -1,4 +1,4 @@
-import type { GoBlock, GoRoot } from "@/types/ast/ast";
+import type { GoBlock, GoRoot } from "@/ast";
 
 export function aliasNodeContent(current: GoBlock | GoRoot): string {
   let result = current.content;

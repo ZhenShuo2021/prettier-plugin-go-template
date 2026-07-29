@@ -3,7 +3,7 @@ import {
   isFollowedByEmptyLine,
   isFollowedByNode,
 } from "./line-detection";
-import type { GoInline, GoBlock } from "@/types/ast/ast";
+import type { GoInline, GoBlock } from "@/ast";
 
 describe("hasNodeLinebreak", () => {
   it("should return true if there is a linebreak after the node", () => {

@@ -1,4 +1,4 @@
-import type { GoInline } from "@/types/ast/ast";
+import type { GoInline } from "@/ast";
 import { getFirstBlockParent } from "./ast-navigation";
 
 export function hasNodeLinebreak(node: GoInline, source: string): boolean {

@@ -2,7 +2,7 @@ import {
   hasPrettierIgnoreLine,
   isPrettierIgnoreBlock,
 } from "./ignore";
-import type { GoNode, GoBlock, GoInline, GoRoot } from "@/types/ast/ast";
+import type { GoNode, GoBlock, GoInline, GoRoot } from "@/ast";
 
 describe("hasPrettierIgnoreLine", () => {
   it("should return false for root nodes", () => {

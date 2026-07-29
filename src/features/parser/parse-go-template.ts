@@ -8,8 +8,8 @@ import type {
   GoTrimMarker,
   GoInline,
   GoMultiBlock,
-} from "@/types/ast/ast";
-import astGuards from "@/types/ast/ast-guards";
+} from "@/ast";
+import astGuards from "@/ast";
 import { createIdGenerator, default as last } from "@/utils";
 import type { Parser } from "prettier";
 import { aliasNodeContent } from "@/features/parser/alias-node-content";

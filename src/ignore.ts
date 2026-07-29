@@ -1,5 +1,5 @@
-import type { GoNode } from "@/types/ast/ast";
-import astGuards from "@/types/ast/ast-guards";
+import type { GoNode } from "@/ast";
+import astGuards from "@/ast";
 import {
   getFirstBlockParent,
   getPreviousSibling,

@@ -4,7 +4,7 @@ import type {
   GoInlineStartDelimiter,
   GoTrimMarker,
   GoUnformattable,
-} from "@/types/ast/ast";
+} from "@/ast";
 import { type AstPath, type Doc, type ParserOptions } from "prettier";
 import pkg from "prettier/doc.js";
 import { isBlockEnd, isBlockStart } from "./ast-navigation";
