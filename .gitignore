@@ -9,4 +9,4 @@ yarn.lock
 lib
 lib_test
 .idea
-dist/
+.rumdl

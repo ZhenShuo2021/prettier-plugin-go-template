@@ -1,2 +1,4 @@
 src/tests
 pnpm-lock.yaml
+*.md
+.rumdl
