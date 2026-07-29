@@ -1,5 +1,5 @@
 import type { GoNode } from "@/ast";
-import constants from "@/config/constants";
+import constants from "@/constants";
 import { doc, type Doc, type ParserOptions, type Printer } from "prettier";
 import astGuards from "@/ast";
 import pkg from "prettier/doc.js";

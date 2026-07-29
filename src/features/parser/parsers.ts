@@ -1,5 +1,5 @@
 import type { GoNode } from "@/ast";
-import constants from "@/config/constants";
+import constants from "@/constants";
 import type { Parser } from "prettier";
 import { parseGoTemplate } from "@/features/parser/parse-go-template";
 

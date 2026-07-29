@@ -1,5 +1,5 @@
 import type { SupportLanguage } from "prettier";
-import constants from "@/config/constants";
+import constants from "@/constants";
 
 const languages: SupportLanguage[] = [
   {
