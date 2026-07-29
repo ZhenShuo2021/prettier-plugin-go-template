@@ -138,14 +138,16 @@ export const parseGoTemplate: Parser<GoNode>["parse"] = (text) => {
       throw Error("Formattable match without statement.");
     }
 
-    const trimStart =
+    const trimStart = (
       (isCommentAction
         ? match.groups?.trimStartComment
-        : match.groups?.trimStart) ?? ("" as GoTrimMarker);
-    const trimEnd =
+        : match.groups?.trimStart) ?? ""
+    ) as GoTrimMarker;
+    const trimEnd = (
       (isCommentAction
         ? match.groups?.trimEndComment
-        : match.groups?.trimEnd) ?? ("" as GoTrimMarker);
+        : match.groups?.trimEnd) ?? ""
+    ) as GoTrimMarker;
     const startDelimiter = (
       isCommentAction ? "/*" : (match.groups?.startdelimiter ?? "")
     ) as GoInlineStartDelimiter;
